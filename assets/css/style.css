@@ -216,9 +216,31 @@ input:focus, textarea:focus { outline: 2px solid color-mix(in oklab, var(--brand
 @media (max-width: 900px) { .process-steps { grid-template-columns: 1fr; } }
 
 .testimonials { padding: 2rem 0 2.5rem; }
-.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-.testimonial { border: 1px solid var(--border); border-radius: .75rem; background: var(--card); padding: 1rem; box-shadow: var(--shadow); }
-@media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+/* New Reviews scroller layout */
+.testimonials-grid { display: block; }
+.rv-scroller { position: relative; display: grid; grid-auto-flow: column; gap: 0; overflow: hidden; padding-bottom: .25rem; }
+.rv-scroller::-webkit-scrollbar { display: none; }
+.rv-track { display: grid; grid-auto-flow: column; grid-auto-columns: min(360px, 90%); gap: 16px; will-change: transform; }
+@media (max-width: 900px) { .rv-track { grid-auto-columns: 88%; } }
+@media (max-width: 900px) { .rv-scroller { grid-auto-columns: 88%; } }
+
+/* Reviews carousel */
+/* Modern review card */
+.rv-card { display: grid; gap: .6rem; padding: 1rem; border-radius: .75rem; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); scroll-snap-align: start; }
+.rv-head { display: grid; grid-template-columns: auto 1fr; gap: .6rem; align-items: center; }
+.rv-avatar { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; font-weight: 800; color: #fff; background: var(--brand); }
+.rv-name { color: var(--brand); font-weight: 700; display: block; line-height: 1.2; height: 1.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-meta { display: grid; gap: .15rem; align-content: start; }
+.stars { display: flex; gap: 2px; font-size: .9rem; color: #94a3b8; }
+.star.on { color: #f59e0b; }
+.rv-text { color: var(--text); opacity: .9; }
+
+/* Fade edges */
+/* Fade edges for scroller */
+#google-reviews { position: relative; }
+#google-reviews::before, #google-reviews::after { content: ""; position: absolute; top: 0; bottom: 0; width: 48px; pointer-events: none; }
+#google-reviews::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+#google-reviews::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
 
 .cta-strong { padding: 2.5rem 0 3rem; background: linear-gradient(180deg, color-mix(in oklab, var(--brand) 14%, transparent), transparent); text-align: center; }
 .cta-strong-inner { display: grid; gap: .6rem; place-items: center; }
