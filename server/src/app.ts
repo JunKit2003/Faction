@@ -7,6 +7,7 @@ import { errorHandler } from './http.js';
 import { originCheck, requireAdmin } from './auth/middleware.js';
 import { authRoutes, mePasswordRoute } from './auth/routes.js';
 import { userRoutes } from './users/routes.js';
+import { mediaRoutes, uploadsStatic } from './media/routes.js';
 
 export interface AppDeps {
   db: Kysely<DB>;
@@ -27,6 +28,8 @@ export function createApp({ db, cfg }: AppDeps): Express {
     }
   });
 
+  app.use('/uploads', uploadsStatic(cfg));
+
   const api = express.Router();
   api.use(express.json({ limit: '2mb' }), cookieParser(), originCheck(cfg));
   api.use('/auth', authRoutes(db, cfg));
@@ -35,6 +38,7 @@ export function createApp({ db, cfg }: AppDeps): Express {
   admin.use(requireAdmin(db, cfg));
   admin.use('/users', userRoutes(db));
   admin.use('/me', mePasswordRoute(db));
+  admin.use('/media', mediaRoutes(db, cfg));
   api.use('/admin', admin);
 
   api.use((_req, res) => { res.status(404).json({ error: 'Not found.' }); });
