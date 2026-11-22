@@ -45,18 +45,16 @@ export function Layout() {
       <TitleManager />
       <Header />
       <AnimatePresence mode="wait" initial={false}>
-        <motion.main
-          id="main"
-          key={location.pathname}
-          tabIndex={-1}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="outline-none"
-        >
+        <motion.main id="main" key={location.pathname} tabIndex={-1} className="outline-none"
+          initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.25 } }} exit={{ opacity: 0, transition: { duration: 0.2 } }}>
           <Outlet />
         </motion.main>
+      </AnimatePresence>
+      {/* Lime curtain that sweeps across on page change (not on first load). */}
+      <AnimatePresence initial={false}>
+        <motion.div key={location.pathname} aria-hidden className="pointer-events-none fixed inset-0 z-[90] origin-bottom bg-accent"
+          initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1], delay: 0.1 } }}
+          exit={{ scaleY: 0 }} style={{ transformOrigin: 'top' }} />
       </AnimatePresence>
       {painted && <Footer />}
       {painted && <BackToTop />}

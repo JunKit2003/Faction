@@ -2,33 +2,31 @@ import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { useSection } from '../../content/ContentContext';
 import { Reveal } from '../Reveal';
+import { SectionHeading } from '../ui/SectionHeading';
 
 export function Process() {
   const p = useSection('home.process');
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLOListElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 80%', 'end 55%'] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 85%', 'end 60%'] });
   const line = useTransform(scrollYProgress, [0, 1], [0, 1]);
   if (!p.steps.length) return null;
   return (
     <section data-section="home.process" className="container-x py-24 sm:py-32">
-      <Reveal className="mb-16"><h2 className="h2-xl">{p.title}</h2></Reveal>
-      <div ref={ref} className="relative">
-        <div aria-hidden className="absolute left-6 top-0 h-full w-px bg-line lg:left-0 lg:top-6 lg:h-px lg:w-full" />
-        <motion.div aria-hidden style={{ scaleY: reduce ? 1 : line }} className="absolute left-6 top-0 h-full w-px origin-top bg-accent lg:hidden" />
-        <motion.div aria-hidden style={{ scaleX: reduce ? 1 : line }} className="absolute left-0 top-6 hidden h-px w-full origin-left bg-accent lg:block" />
-        <ol className="relative grid gap-12 lg:grid-cols-3 lg:gap-10">
-          {p.steps.map((s, i) => (
-            <Reveal as="li" key={i} delay={i * 0.12} className="relative grid grid-cols-[48px_1fr] gap-6 lg:grid-cols-1">
-              <span className="relative z-10 grid h-12 w-12 place-items-center rounded-full border border-accent bg-bg font-display text-xl text-accent-ink shadow-[0_0_0_8px_var(--bg)]">{i + 1}</span>
-              <div className="flex flex-col gap-3 lg:pr-6">
-                <h3 className="font-display text-4xl uppercase leading-none text-fg">{s.title}</h3>
-                <p className="text-base leading-relaxed text-muted">{s.text}</p>
-              </div>
-            </Reveal>
-          ))}
-        </ol>
-      </div>
+      <SectionHeading eyebrow={p.eyebrow} title={p.title} />
+      <ol ref={ref} className="relative grid gap-5 lg:grid-cols-3">
+        <motion.span aria-hidden style={{ scaleX: reduce ? 1 : line }} className="absolute -top-6 left-0 hidden h-[2px] w-full origin-left bg-accent lg:block" />
+        {p.steps.map((s, i) => (
+          <Reveal as="li" key={i} delay={i * 0.1} className="card group relative flex min-h-[300px] flex-col justify-between overflow-hidden p-7 transition-colors duration-500 hover:border-accent/50 sm:p-9">
+            <span aria-hidden className="display text-outline pointer-events-none absolute -right-3 -top-6 text-[9rem] leading-none transition-[-webkit-text-stroke-color] duration-500 [--stroke:var(--line-strong)] group-hover:[--stroke:var(--accent)]">{String(i + 1).padStart(2, '0')}</span>
+            <span className="mono text-[11px] uppercase tracking-[0.2em] text-accent-ink">Step {String(i + 1).padStart(2, '0')}</span>
+            <div className="relative flex flex-col gap-3">
+              <h3 className="h3 text-3xl sm:text-4xl">{s.title}</h3>
+              <p className="text-base leading-relaxed text-muted">{s.text}</p>
+            </div>
+          </Reveal>
+        ))}
+      </ol>
     </section>
   );
 }

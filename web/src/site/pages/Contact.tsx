@@ -5,7 +5,8 @@ import { PageHero } from '../PageHero';
 import { Reveal } from '../Reveal';
 import { SocialLinks } from '../SocialLinks';
 import { MapEmbed } from '../MapEmbed';
-import { OpenBadge } from '../OpenBadge';
+import { StatusLine } from '../StatusLine';
+import { DisplayText } from '../../content/DisplayText';
 
 export function ContactForm() {
   const c = useSection('contact');
@@ -38,7 +39,7 @@ export function ContactForm() {
     setMessage('');
   };
 
-  const field = 'peer w-full rounded-2xl border border-line bg-bg/60 px-4 pb-3 pt-7 text-base text-fg outline-none transition placeholder:text-transparent focus:border-accent focus:ring-4 focus:ring-accent/15 aria-[invalid=true]:border-red-500';
+  const field = 'peer w-full rounded-2xl border border-line bg-bg/60 px-4 pb-3 pt-7 text-base text-fg outline-none transition placeholder:text-transparent focus:border-accent focus:ring-4 focus:ring-accent/20 aria-[invalid=true]:border-red-500';
   const label = 'pointer-events-none absolute left-4 top-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2.5 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-[0.14em] peer-focus:text-accent-ink';
 
   return (
@@ -68,14 +69,14 @@ export default function Contact() {
   const site = useSection('site');
   return (
     <>
-      <PageHero title={c.title} intro={c.intro} />
-      <section id="booking" className="container-x grid scroll-mt-28 gap-10 pb-20 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <PageHero crumb="Contact" eyebrow={c.eyebrow} title={c.title} intro={c.intro} />
+      <section id="booking" className="container-x grid scroll-mt-28 gap-10 py-16 sm:py-24 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <Reveal className="flex flex-col gap-8">
-          <h2 className="h2">{c.getInTouchTitle}</h2>
+          <h2 className="h2"><DisplayText text={c.getInTouchTitle} /></h2>
           <dl className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <dt className="eyebrow flex items-center gap-3">{site.labels.hours} <OpenBadge /></dt>
-              <dd className="flex flex-col text-lg text-fg">{formatHours(site.hours).map((l) => <span key={l}>{l}</span>)}</dd>
+              <dt className="eyebrow">{site.labels.hours}</dt>
+              <dd className="flex flex-col gap-1 text-lg text-fg"><StatusLine className="mb-1" />{formatHours(site.hours).map((l) => <span key={l}>{l}</span>)}</dd>
             </div>
             <div className="flex flex-col gap-2">
               <dt className="eyebrow">{site.labels.address}</dt>
@@ -85,7 +86,7 @@ export default function Contact() {
           <SocialLinks size="lg" />
         </Reveal>
         <Reveal delay={0.1} className="card p-6 sm:p-10">
-          <h2 className="h2 mb-8">{c.formTitle}</h2>
+          <h2 className="h2 mb-8"><DisplayText text={c.formTitle} /></h2>
           <ContactForm />
         </Reveal>
       </section>

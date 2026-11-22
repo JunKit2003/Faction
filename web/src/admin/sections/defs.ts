@@ -75,6 +75,31 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
       { name: 'slideIds', label: 'Background images', kind: 'mediaList', hint: 'They fade from one to the next. The first loads first.' },
     ],
   },
+  'home.ticker': {
+    preview: 'home',
+    fields: [{ name: 'items', label: 'Ticker words', kind: 'list', itemLabel: 'Word', newItem: '', itemKind: 'text' }],
+  },
+  'home.reasons': {
+    preview: 'home',
+    fields: [
+      { name: 'eyebrow', label: 'Small label', kind: 'text' },
+      { name: 'title', label: 'Title', kind: 'text' },
+      { name: 'items', label: 'Reasons', kind: 'list', itemLabel: 'Reason', newItem: { icon: 'wrench', title: '', text: '' }, fields: [
+        { name: 'title', label: 'Title', kind: 'text' },
+        { name: 'icon', label: 'Icon', kind: 'select', options: ['wrench', 'clock', 'map', 'shield', 'bike', 'zap', 'heart', 'star'].map((v) => ({ value: v, label: v })) },
+        { name: 'text', label: 'Text', kind: 'textarea' },
+      ] },
+    ],
+  },
+  'home.closer': {
+    preview: 'home',
+    fields: [
+      { name: 'title', label: 'Big line', kind: 'text' },
+      { name: 'text', label: 'Text', kind: 'textarea' },
+      { name: 'buttonLabel', label: 'Button text', kind: 'text' },
+      { name: 'href', label: 'Button goes to', kind: 'text' },
+    ],
+  },
   'home.services': {
     preview: 'home',
     fields: [
