@@ -13,6 +13,8 @@ beforeAll(async () => {
   fs.mkdirSync(path.join(dist, 'assets'));
   fs.writeFileSync(path.join(dist, 'assets', 'app.js'), 'console.log(1);'.repeat(500));
   fs.writeFileSync(path.join(dist, 'assets', 'anton-latin-400-normal-AbC123.woff2'), 'font');
+  fs.writeFileSync(path.join(dist, 'assets', 'inter-latin-wght-normal-XyZ789.woff2'), 'font');
+  fs.writeFileSync(path.join(dist, 'assets', 'inter-cyrillic-wght-normal-Nope.woff2'), 'font');
   ctx = await setupTestApp({ webDist: dist });
   await seedIfEmpty(ctx.db, ctx.cfg);
 }, 120_000);
@@ -103,9 +105,11 @@ describe('pages', () => {
     }
   });
 
-  it('preloads the headline font so the hero does not jump', async () => {
+  it('preloads the latin headline and body fonts so text paints early and does not jump', async () => {
     const res = await request(ctx.app).get('/');
     expect(res.text).toContain('<link rel="preload" href="/assets/anton-latin-400-normal-AbC123.woff2" as="font" type="font/woff2" crossorigin>');
+    expect(res.text).toContain('<link rel="preload" href="/assets/inter-latin-wght-normal-XyZ789.woff2" as="font" type="font/woff2" crossorigin>');
+    expect(res.text).not.toContain('inter-cyrillic');
   });
 
   it('404s (not 500s) for missing upload files', async () => {

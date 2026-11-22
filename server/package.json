@@ -11,9 +11,9 @@
     "test": "vitest run",
     "test:pg": "TEST_DB_CLIENT=pg TEST_DATABASE_URL=postgres://faction:faction@localhost:54321/faction vitest run",
     "test:mysql": "TEST_DB_CLIENT=mysql TEST_DATABASE_URL=mysql://root:faction-root@localhost:33061/faction vitest run",
-    "db:migrate": "tsx --env-file-if-exists=../.env src/cli/migrate.ts",
-    "db:seed": "tsx --env-file-if-exists=../.env src/cli/seed.ts",
-    "admin:create": "tsx --env-file-if-exists=../.env src/cli/admin.ts"
+    "db:migrate": "node --env-file-if-exists=../.env dist/cli/migrate.js",
+    "db:seed": "node --env-file-if-exists=../.env dist/cli/seed.js",
+    "admin:create": "node --env-file-if-exists=../.env dist/cli/admin.js"
   },
   "dependencies": {
     "@faction/shared": "*",

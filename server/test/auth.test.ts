@@ -104,6 +104,25 @@ describe('protection', () => {
   });
 });
 
+describe('secure cookie', () => {
+  it('is Secure when the public URL is https, even outside production', async () => {
+    const https = await setupTestApp({ publicBaseUrl: 'https://faction.my', secureCookies: true });
+    await createAdmin(https.db, 'owner@faction.my');
+    const res = await request(https.app).post('/api/auth/login').set('Origin', 'https://faction.my').send({ email: 'owner@faction.my', password: PASSWORD });
+    expect(res.headers['set-cookie']![0]).toMatch(/;\s*Secure/i);
+    await https.close();
+  });
+  it('is not Secure on a plain http URL so sign-in still works', async () => {
+    const res = await login({ email: 'owner@faction.my', password: PASSWORD });
+    expect(res.headers['set-cookie']![0]).not.toMatch(/;\s*Secure/i);
+  });
+  it('is derived from PUBLIC_BASE_URL', async () => {
+    const { loadConfig } = await import('../src/config.js');
+    expect(loadConfig({ DB_CLIENT: 'pg', DATABASE_URL: 'x', PUBLIC_BASE_URL: 'https://faction.my', NODE_ENV: 'production' }).secureCookies).toBe(true);
+    expect(loadConfig({ DB_CLIENT: 'pg', DATABASE_URL: 'x', PUBLIC_BASE_URL: 'http://10.0.0.5:3000', NODE_ENV: 'production' }).secureCookies).toBe(false);
+  });
+});
+
 describe('bootstrapAdmin', () => {
   it('creates the first admin only when there are none', async () => {
     await ctx.reset();

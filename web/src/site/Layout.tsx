@@ -6,6 +6,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { BackToTop } from './BackToTop';
 import { SmoothScroll } from './SmoothScroll';
+import { useAfterFirstPaint } from '../content/useAfterFirstPaint';
 
 /** Scroll to top on page change, or to #hash targets (e.g. /contact#booking). */
 function ScrollManager() {
@@ -35,6 +36,7 @@ function TitleManager() {
 export function Layout() {
   const location = useLocation();
   const { accentColor } = useSection('site');
+  const painted = useAfterFirstPaint();
   useEffect(() => { document.documentElement.style.setProperty('--accent', accentColor); }, [accentColor]);
   return (
     <>
@@ -56,8 +58,8 @@ export function Layout() {
           <Outlet />
         </motion.main>
       </AnimatePresence>
-      <Footer />
-      <BackToTop />
+      {painted && <Footer />}
+      {painted && <BackToTop />}
     </>
   );
 }

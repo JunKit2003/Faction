@@ -64,7 +64,8 @@ export function Hero() {
         <h1 className="max-w-[14ch] font-display text-[clamp(3.4rem,11vw,9.5rem)] uppercase leading-[0.86] tracking-[-0.01em]">
           <SplitWords text={hero.title} delay={0.15} />
         </h1>
-        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        {/* Visible from the first paint (it is the LCP element on phones): slide only, no fade. */}
+        <motion.p initial={{ y: 18 }} animate={{ y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="mt-7 max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl">
           {hero.text}
         </motion.p>

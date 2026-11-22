@@ -66,7 +66,7 @@ export function renderHead(page: HeadPage, c: PublicContent, baseUrl: string, no
       `<script type="application/ld+json">${scriptJson(jsonLd(c, baseUrl))}</script>`,
     );
     const hero = page === 'home' ? c.media[c.sections['home.hero'].slideIds[0] ?? ''] : undefined;
-    if (hero?.srcset) tags.push(`<link rel="preload" as="image" imagesrcset="${esc(hero.srcset)}" imagesizes="100vw" fetchpriority="high">`);
+    if (hero?.srcset) tags.push(`<link rel="preload" as="image" media="(min-width: 1024px)" imagesrcset="${esc(hero.srcset)}" imagesizes="100vw" fetchpriority="high">`);
   }
   return tags.filter(Boolean).join('\n    ');
 }

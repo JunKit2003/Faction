@@ -12,7 +12,7 @@ declare global {
 }
 
 export function setSessionCookie(res: Response, token: string, cfg: Config) {
-  res.cookie(SESSION_COOKIE, token, { httpOnly: true, sameSite: 'lax', secure: cfg.isProd, maxAge: SESSION_MS, path: '/' });
+  res.cookie(SESSION_COOKIE, token, { httpOnly: true, sameSite: 'lax', secure: cfg.secureCookies, maxAge: SESSION_MS, path: '/' });
 }
 
 export function requireAdmin(db: Kysely<DB>, cfg: Config): RequestHandler {

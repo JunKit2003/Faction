@@ -13,6 +13,8 @@ export interface Config {
   publicBaseUrl: string;
   webDist: string;
   isProd: boolean;
+  /** Mark the session cookie Secure. True when the public URL is https. */
+  secureCookies: boolean;
   bootstrap: { email?: string; password?: string; name: string };
 }
 
@@ -30,6 +32,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     publicBaseUrl: (env.PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, ''),
     webDist: path.resolve(PROJECT_ROOT, env.WEB_DIST || 'web/dist'),
     isProd: env.NODE_ENV === 'production',
+    secureCookies: (env.PUBLIC_BASE_URL ?? '').startsWith('https://'),
     bootstrap: {
       email: env.ADMIN_BOOTSTRAP_EMAIL || undefined,
       password: env.ADMIN_BOOTSTRAP_PASSWORD || undefined,

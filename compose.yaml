@@ -1,0 +1,46 @@
+# Production-style stack. Pick ONE database with a profile:
+#   PostgreSQL:  DB_CLIENT=pg    docker compose --profile pg up -d --build
+#   MySQL:       DB_CLIENT=mysql docker compose --profile mysql up -d --build
+# Already have a database? Run only the app and set DATABASE_URL in .env:
+#   docker compose up -d --build app
+# Settings are read from .env (see .env.example).
+name: faction
+
+services:
+  app:
+    build: .
+    image: faction-web
+    restart: unless-stopped
+    ports: ["${PORT:-3000}:3000"]
+    environment:
+      DB_CLIENT: ${DB_CLIENT:-pg}
+      DATABASE_URL: ${DATABASE_URL:-postgres://faction:${DB_PASSWORD:-faction}@pg:5432/faction}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:3000}
+      ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      ADMIN_BOOTSTRAP_NAME: ${ADMIN_BOOTSTRAP_NAME:-Admin}
+    volumes: [uploads:/data/uploads]
+    depends_on:
+      pg: { condition: service_healthy, required: false }
+      mysql: { condition: service_healthy, required: false }
+
+  pg:
+    profiles: [pg]
+    image: postgres:16
+    restart: unless-stopped
+    environment: { POSTGRES_USER: faction, POSTGRES_PASSWORD: "${DB_PASSWORD:-faction}", POSTGRES_DB: faction }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U faction"], interval: 5s, retries: 20 }
+
+  mysql:
+    profiles: [mysql]
+    image: mysql:8.4
+    restart: unless-stopped
+    environment: { MYSQL_USER: faction, MYSQL_PASSWORD: "${DB_PASSWORD:-faction}", MYSQL_DATABASE: faction, MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-faction-root}" }
+    volumes: [mysqldata:/var/lib/mysql]
+    healthcheck: { test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -ufaction -p$$MYSQL_PASSWORD --silent"], interval: 5s, retries: 30 }
+
+volumes:
+  uploads:
+  pgdata:
+  mysqldata:
