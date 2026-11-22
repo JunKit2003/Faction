@@ -11,7 +11,8 @@ const site = {
   openedYear: 2022, whatsappNumber: '601133321767', address: 'G-8, Wisma WIM', hours,
   mapEmbedUrl: 'https://www.google.com/maps/embed?pb=abc',
   socials: [{ platform: 'instagram', url: 'https://www.instagram.com/faction.my' }],
-  labels: { hours: 'Hours', address: 'Address', contact: 'Contact' },
+  labels: { hours: 'Hours', address: 'Address', contact: 'Contact', open: 'Open now', closed: 'Closed, gone riding' },
+  coordinates: '3.1434° N, 101.6324° E',
 };
 
 describe('section schemas', () => {
@@ -66,6 +67,29 @@ describe('section schemas', () => {
 
   it('rejects unknown keys so stale data cannot sneak through', () => {
     expect(sectionSchemas['home.map'].safeParse({ title: 'a', subtitle: 'b', extra: 1 }).success).toBe(false);
+  });
+});
+
+describe('v2 sections', () => {
+  it('has the new homepage blocks with labels', () => {
+    for (const k of ['home.ticker', 'home.reasons', 'home.closer'] as const) {
+      expect(SECTION_KEYS).toContain(k);
+      expect(SECTION_LABELS[k]).toBeTruthy();
+    }
+  });
+  it('validates reasons icons from a fixed set', () => {
+    const ok = { eyebrow: 'Why', title: 'T', items: [{ icon: 'wrench', title: 'A', text: 'B' }] };
+    expect(sectionSchemas['home.reasons'].safeParse(ok).success).toBe(true);
+    expect(sectionSchemas['home.reasons'].safeParse({ ...ok, items: [{ icon: 'skull', title: 'A', text: 'B' }] }).success).toBe(false);
+  });
+  it('closer needs a safe link', () => {
+    const ok = { title: 'Get *dialled.*', text: 'x', buttonLabel: 'Book', href: '/contact#booking' };
+    expect(sectionSchemas['home.closer'].safeParse(ok).success).toBe(true);
+    expect(sectionSchemas['home.closer'].safeParse({ ...ok, href: 'javascript:alert(1)' }).success).toBe(false);
+  });
+  it('about allows an optional second photo', () => {
+    const base = { title: 'A', intro: '', storyTitle: 'S', story: ['p'], imageId: 'I', secondImageId: '', findTitle: 'F', findText: '', contactLabel: 'C', eyebrow: '', quote: '', badge: '' };
+    expect(sectionSchemas.about.safeParse(base).success).toBe(true);
   });
 });
 

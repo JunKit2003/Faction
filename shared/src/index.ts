@@ -3,3 +3,4 @@ export * from './hours';
 export * from './richtext';
 export * from './keys';
 export type { AllSections, SectionData } from './schemas';
+export * from './display';

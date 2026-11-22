@@ -16,7 +16,10 @@ describe('seedIfEmpty', () => {
     const data = Object.fromEntries(rows.map((r) => [r.key, JSON.parse(r.data)]));
     for (const k of SECTION_KEYS) expect(sectionSchemas[k].safeParse(data[k]).success, k).toBe(true);
 
-    expect(data['home.hero'].title).toBe('Ride Hard. We’ll keep you rolling.');
+    expect(data['home.hero'].title).toBe('Ride _hard._ We’ll keep you *rolling.*');
+    expect(data.site.accentColor).toBe('#c6ff3d');
+    expect(data.about.secondImageId).not.toBe('');
+    expect(data['home.closer'].title).toBe('Get *dialled.*');
     expect(data['home.hero'].slideIds).toHaveLength(3);
     expect(data.faq.items).toHaveLength(9);
     expect(data.faq.items[1].a).toBe('We’re open {hours}.');

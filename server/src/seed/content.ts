@@ -24,7 +24,7 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
   return {
     site: {
       name: 'Faction Bikeworks',
-      accentColor: '#38bdf8',
+      accentColor: '#c6ff3d',
       logoOnLightId: id('logoOnLight'),
       logoOnDarkId: id('logoOnDark'),
       faviconId: id('favicon'),
@@ -41,7 +41,8 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
         { platform: 'facebook', url: 'https://www.facebook.com/faction.my/' },
         { platform: 'whatsapp', url: 'https://wa.me/601133321767' },
       ],
-      labels: { hours: 'Hours', address: 'Address', contact: 'Contact' },
+      labels: { hours: 'Hours', address: 'Address', contact: 'Contact', open: 'Open now', closed: 'Closed, gone riding' },
+      coordinates: '3.1434° N, 101.6324° E',
     },
     nav: {
       items: [
@@ -54,14 +55,21 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
       ctaIndex: 4,
     },
     'home.hero': {
-      title: 'Ride Hard. We’ll keep you rolling.',
+      eyebrow: 'Bukit Kiara · Kuala Lumpur',
+      title: 'Ride _hard._ We’ll keep you *rolling.*',
+      badgeTitle: 'Same-day fixes',
+      badgeText: 'Minor tuning and repairs while you ride.',
       text: 'Your dedicated mountain bike service shop beside the Bukit Kiara trails. From precision suspension tuning to full rebuilds — drop in before you drop in.',
       primary: { label: 'Book a Service', href: '/contact#booking' },
       secondary: { label: 'About the Shop', href: '/about' },
       slideIds: [id('hero1'), id('hero3'), id('hero4')],
     },
+    'home.ticker': {
+      items: ['Suspension service', 'Wheel building', 'Brake bleeds', 'Custom builds', 'Full tune & diagnostics', 'e-MTB friendly'],
+    },
     'home.services': {
-      title: 'Pro MTB Services',
+      eyebrow: 'What we do',
+      title: 'Pro MTB *Services*',
       subtitle: 'Race-grade work. Rider-first advice. Same-day fixes when you need them.',
       items: [
         { title: 'Full Tune & Diagnostics', mediaId: id('image3'), text: 'We perform a complete drivetrain, brakes, wheels, and bolt check with precision indexing, typically providing a diagnosis and informing the customer of necessary repairs or services unless a full service or special request is made.' },
@@ -78,16 +86,29 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
       ],
     },
     'home.process': {
-      title: 'How It Works',
+      eyebrow: 'The drill',
+      title: 'How it _works._',
       steps: [
         { title: 'Check In', text: 'Drop by before or after your ride for a professional inspection and expert advice—perfect if something feels off or it’s been a while since your last service.' },
         { title: 'Service', text: 'We service with race-level attention and confirm timelines.' },
         { title: 'Test & Tune', text: 'Pick up dialed. We’ll set sag, shifting, and brake feel for you.' },
       ],
     },
-    'home.map': { title: 'Riders trust Faction', subtitle: 'See real reviews and location on Google.' },
+    'home.reasons': {
+      eyebrow: 'Why riders choose us',
+      title: 'Wrenched by _riders,_ for *riders.*',
+      items: [
+        { icon: 'wrench', title: 'Rider-run workshop', text: 'Our mechanics ride, test, and race the gear we recommend.' },
+        { icon: 'clock', title: 'Same-day fixes', text: 'Minor tuning and repairs are turned around the same day.' },
+        { icon: 'map', title: 'Trailside at Kiara', text: 'Right beside the Bukit Kiara trails. Drop in before you drop in.' },
+        { icon: 'shield', title: 'No surprise bills', text: 'We tell you what it needs, and ask before fitting any extra parts.' },
+      ],
+    },
+    'home.map': { eyebrow: 'Come say hi', title: 'Riders trust *Faction*', subtitle: 'See real reviews and location on Google.' },
+    'home.closer': { title: 'Get *dialled.*', text: 'Book a service, ask a question, or just roll in after your loop.', buttonLabel: 'Book a service', href: '/contact#booking' },
     about: {
-      title: 'About Faction Bikeworks',
+      eyebrow: 'Our story',
+      title: 'About Faction *Bikeworks*',
       intro: 'Born from the Bukit Kiara riding community, dedicated to precision bike service.',
       storyTitle: 'Our Story',
       story: [
@@ -95,17 +116,25 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
         'We specialize in mountain bikes: suspension service, wheel building, brake bleeds, and full custom builds. Whether you ride enduro, trail, or XC, our mechanics ride, test, and race the gear we recommend.',
       ],
       imageId: id('image1'),
+      secondImageId: id('image5'),
+      quote: 'We treat every bike like it’s lining up for race day, because often, it is.',
+      badge: 'Est. 2022 · Bukit Kiara ·',
       findTitle: 'Where to Find Us',
       findText: 'We’re located beside **Bukit Kiara** in Kuala Lumpur—Malaysia’s iconic mountain biking hotspot. Stop by for a pre-ride check or post-ride service.',
       contactLabel: 'See contact options',
     },
     media: {
-      title: 'Media Gallery',
+      eyebrow: 'From the shop floor',
+      title: 'Media *Gallery*',
       imageIds: [id('hero1'), id('hero3'), id('hero4'), id('image1'), id('image2'), id('image3'), id('image4'), id('image5'), id('image6')],
     },
     faq: {
+      eyebrow: 'Good questions',
       title: 'FAQ',
       intro: 'Answers to common questions about service, bookings, pricing, and more.',
+      askTitle: 'Still *stuck?*',
+      askText: 'Ask the mechanic on WhatsApp. Real answers from people who ride.',
+      askButton: 'Ask the mechanic',
       items: [
         { q: 'Do I need to book in advance or can I walk in?', a: 'Give us a call or just drop by! While walk-ins are cool, booking ahead speeds things up.' },
         { q: 'What are your operating hours?', a: 'We’re open {hours}.' },
@@ -119,7 +148,8 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
       ],
     },
     contact: {
-      title: 'Contact & Hours',
+      eyebrow: 'Come say hi',
+      title: 'Contact & *Hours*',
       intro: 'Have a question or need a quick fix? We’re here to help.',
       getInTouchTitle: 'Get in Touch',
       formTitle: 'Quick Message',

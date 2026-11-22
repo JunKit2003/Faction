@@ -46,7 +46,7 @@ export function spaRoutes(db: Kysely<DB>, cfg: Config): Router {
   // Preload the self-hosted headline font so the hero headline doesn't reflow when it arrives.
   const assetsDir = path.join(cfg.webDist, 'assets');
   const fontPreload = (fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : [])
-    .filter((f) => /^(anton-latin-400-normal|inter-latin-wght-normal)-.*\.woff2$/.test(f))
+    .filter((f) => /^(archivo-latin-standard-normal|inter-tight-latin-wght-normal)-.*\.woff2$/.test(f))
     .map((f) => `<link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin>`)
     .join('');
   const template = fs.readFileSync(indexPath, 'utf8').replace('<!--app-head-->', () => `${fontPreload}<!--app-head-->`);

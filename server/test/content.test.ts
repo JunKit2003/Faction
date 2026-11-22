@@ -23,7 +23,7 @@ describe('GET /api/content', () => {
   it('returns every section and the media they use', async () => {
     const res = await request(ctx.app).get('/api/content');
     expect(res.status).toBe(200);
-    expect(res.body.sections['home.hero'].title).toBe('Ride Hard. We’ll keep you rolling.');
+    expect(res.body.sections['home.hero'].title).toBe('Ride _hard._ We’ll keep you *rolling.*');
     const slide = res.body.sections['home.hero'].slideIds[0];
     expect(res.body.media[slide]).toMatchObject({ id: slide, url: expect.stringMatching(/^\/uploads\//), alt: 'Mountain biking backdrop' });
     expect(res.headers['cache-control']).toBe('no-cache');

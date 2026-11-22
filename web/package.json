@@ -27,15 +27,16 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@fontsource-variable/inter": "^5.3.0",
-    "@fontsource/anton": "^5.3.0",
+    "@faction/shared": "*",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/inter-tight": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "@tanstack/react-query": "^5.108.2",
     "lenis": "^1.3.27",
     "lucide-react": "^1.77.0",
     "motion": "^14.14.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router": "^8.5.2",
-    "@faction/shared": "*"
+    "react-router": "^8.5.2"
   }
 }

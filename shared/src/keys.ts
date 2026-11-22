@@ -3,7 +3,10 @@ import type { AllSections } from './schemas';
 export const MAP_EMBED_PREFIX = 'https://www.google.com/maps/embed?';
 export const MAP_EMBED_MESSAGE = 'Paste the embed link from Google Maps → Share → Embed a map.';
 
-export const SECTION_KEYS = ['site', 'nav', 'home.hero', 'home.services', 'home.stats', 'home.process', 'home.map', 'about', 'media', 'faq', 'contact', 'footer', 'seo'] as const;
+export const SECTION_KEYS = ['site', 'nav', 'home.hero', 'home.ticker', 'home.services', 'home.stats', 'home.process', 'home.reasons', 'home.map', 'home.closer', 'about', 'media', 'faq', 'contact', 'footer', 'seo'] as const;
+
+export const REASON_ICONS = ['wrench', 'clock', 'map', 'shield', 'bike', 'zap', 'heart', 'star'] as const;
+export type ReasonIcon = (typeof REASON_ICONS)[number];
 export type SectionKey = (typeof SECTION_KEYS)[number];
 
 export const PAGE_PATHS = { home: '/', about: '/about', media: '/media', faq: '/faq', contact: '/contact' } as const;
@@ -17,6 +20,9 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   site: 'Site settings',
   nav: 'Navigation',
   'home.hero': 'Home: Hero',
+  'home.ticker': 'Home: Ticker',
+  'home.reasons': 'Home: Why riders choose us',
+  'home.closer': 'Home: Closing call-to-action',
   'home.services': 'Home: Services',
   'home.stats': 'Home: Stats',
   'home.process': 'Home: How it works',

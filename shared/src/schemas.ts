@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { isSafeHref } from './richtext';
-import { MAP_EMBED_MESSAGE, MAP_EMBED_PREFIX, SECTION_KEYS, SITE_PAGES, type SectionKey, type SitePage } from './keys';
+import { MAP_EMBED_MESSAGE, MAP_EMBED_PREFIX, REASON_ICONS, SECTION_KEYS, SITE_PAGES, type SectionKey, type SitePage } from './keys';
 
 
 const req = (label = 'This field') => z.string().trim().min(1, `${label} is required`).max(5000);
@@ -42,20 +42,28 @@ export const sectionSchemas = {
     hours: hoursSchema,
     mapEmbedUrl: z.string().trim().refine((u) => u.startsWith(MAP_EMBED_PREFIX) && !/[\s"'<>]/.test(u), MAP_EMBED_MESSAGE),
     socials: z.array(z.strictObject({ platform: z.enum(['instagram', 'facebook', 'whatsapp']), url: httpUrl })).max(10),
-    labels: z.strictObject({ hours: req('Label'), address: req('Label'), contact: req('Label') }),
+    labels: z.strictObject({ hours: req('Label'), address: req('Label'), contact: req('Label'), open: req('Label'), closed: req('Label') }),
+    coordinates: opt,
   }),
   nav: z.strictObject({
     items: z.array(z.strictObject({ label: req('Label'), path: pagePath })).min(1).max(8),
     ctaIndex: z.number().int().min(-1).max(7),
   }),
   'home.hero': z.strictObject({
+    eyebrow: opt,
     title: req('Headline'),
+    badgeTitle: opt,
+    badgeText: opt,
     text: req('Text'),
     primary: link,
     secondary: link,
     slideIds: z.array(mediaId).min(1, 'Add at least one hero image').max(20),
   }),
+  'home.ticker': z.strictObject({
+    items: z.array(req('Word')).max(20),
+  }),
   'home.services': z.strictObject({
+    eyebrow: opt,
     title: req('Title'),
     subtitle: opt,
     items: z.array(z.strictObject({ title: req('Title'), text: req('Text'), mediaId })).max(12),
@@ -64,27 +72,43 @@ export const sectionSchemas = {
     items: z.array(z.strictObject({ value: z.string().max(40), label: req('Label'), kind: z.enum(['text', 'years']) })).max(8),
   }),
   'home.process': z.strictObject({
+    eyebrow: opt,
     title: req('Title'),
     steps: z.array(z.strictObject({ title: req('Title'), text: req('Text') })).max(8),
   }),
-  'home.map': z.strictObject({ title: req('Title'), subtitle: opt }),
+  'home.reasons': z.strictObject({
+    eyebrow: opt,
+    title: req('Title'),
+    items: z.array(z.strictObject({ icon: z.enum(REASON_ICONS), title: req('Title'), text: req('Text') })).max(6),
+  }),
+  'home.map': z.strictObject({ eyebrow: opt, title: req('Title'), subtitle: opt }),
+  'home.closer': z.strictObject({ title: req('Title'), text: opt, buttonLabel: req('Button text'), href }),
   about: z.strictObject({
+    eyebrow: opt,
     title: req('Title'),
     intro: opt,
     storyTitle: req('Title'),
     story: z.array(req('Paragraph')).max(12),
     imageId: mediaId,
+    secondImageId: optMediaId,
+    quote: opt,
+    badge: opt,
     findTitle: req('Title'),
     findText: opt,
     contactLabel: req('Label'),
   }),
-  media: z.strictObject({ title: req('Title'), imageIds: z.array(mediaId).max(200) }),
+  media: z.strictObject({ eyebrow: opt, title: req('Title'), imageIds: z.array(mediaId).max(200) }),
   faq: z.strictObject({
+    eyebrow: opt,
     title: req('Title'),
     intro: opt,
+    askTitle: opt,
+    askText: opt,
+    askButton: opt,
     items: z.array(z.strictObject({ q: req('Question'), a: req('Answer') })).max(60),
   }),
   contact: z.strictObject({
+    eyebrow: opt,
     title: req('Title'),
     intro: opt,
     getInTouchTitle: req('Title'),
