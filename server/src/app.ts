@@ -10,6 +10,7 @@ import { userRoutes } from './users/routes.js';
 import { mediaRoutes, uploadsStatic } from './media/routes.js';
 import { publicContentRoute, sectionRoutes } from './content/routes.js';
 import { auditRoutes } from './audit/routes.js';
+import { seoRoutes, spaRoutes } from './web/serve.js';
 
 export interface AppDeps {
   db: Kysely<DB>;
@@ -48,6 +49,8 @@ export function createApp({ db, cfg }: AppDeps): Express {
 
   api.use((_req, res) => { res.status(404).json({ error: 'Not found.' }); });
   app.use('/api', api);
+  app.use(seoRoutes(cfg));
+  app.use(spaRoutes(db, cfg));
   app.use(errorHandler);
   return app;
 }
