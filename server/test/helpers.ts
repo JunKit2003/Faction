@@ -33,3 +33,37 @@ export async function setupTestApp(overrides: Partial<Config> = {}) {
 
 export type TestCtx = Awaited<ReturnType<typeof setupTestApp>>;
 export type TestDb = Kysely<DB>;
+
+import request from 'supertest';
+import { hashPassword } from '../src/auth/passwords.js';
+import { newId as _newId, nowIso as _nowIso } from '../src/db/ids.js';
+
+export const PASSWORD = 'correct-horse-battery';
+
+export async function createAdmin(db: TestDb, email: string, opts: { name?: string; password?: string; disabled?: boolean } = {}) {
+  const id = _newId();
+  await db.insertInto('users').values({
+    id, email, name: opts.name ?? email.split('@')[0]!, password_hash: await hashPassword(opts.password ?? PASSWORD),
+    created_at: _nowIso(), last_login_at: null, disabled_at: opts.disabled ? _nowIso() : null,
+  }).execute();
+  return id;
+}
+
+/** Supertest agent signed in as `email`, sending a same-origin Origin header on every request. */
+export async function signIn(app: TestCtx['app'], email: string, password = PASSWORD) {
+  const agent = request.agent(app);
+  const res = await agent.post('/api/auth/login').set('Origin', ORIGIN).send({ email, password });
+  if (res.status !== 200) throw new Error(`login failed ${res.status} ${JSON.stringify(res.body)}`);
+  return {
+    agent,
+    get: (url: string) => agent.get(url),
+    post: (url: string) => agent.post(url).set('Origin', ORIGIN),
+    put: (url: string) => agent.put(url).set('Origin', ORIGIN),
+    patch: (url: string) => agent.patch(url).set('Origin', ORIGIN),
+    del: (url: string) => agent.delete(url).set('Origin', ORIGIN),
+  };
+}
+
+export async function auditRows(db: TestDb) {
+  return db.selectFrom('audit_log').selectAll().orderBy('id', 'desc').execute();
+}
