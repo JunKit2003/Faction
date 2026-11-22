@@ -5,7 +5,7 @@ import { SECTION_LABELS, isSectionKey } from '@faction/shared';
 import { api, ApiError, type LibraryItem } from '../api';
 import { useLibrary, useUpload } from '../media';
 import { inputCls } from '../form/inputs';
-import { PageHeader } from './PageHeader';
+import { PageHeader } from '../ui';
 
 import { fitContain } from '../form/MediaPicker';
 
@@ -69,8 +69,8 @@ export function MediaLibrary() {
   };
   return (
     <div>
-      <PageHeader title="Media library" intro="Upload photos once, then pick them in any section. Alt text describes the image for screen readers and is the gallery caption." />
-      <div className="px-5 sm:px-8">
+      <PageHeader title="Photos" description="Upload photos once, then pick them in any section. Alt text describes the image for screen readers and is the gallery caption." />
+      <div className="">
         <div onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); void onFiles(e.dataTransfer.files); }}
           className={`flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed p-8 text-center transition ${drag ? 'border-accent bg-accent/5' : 'border-line'}`}>
           <Upload className="h-7 w-7 text-muted" />

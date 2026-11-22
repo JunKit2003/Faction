@@ -7,7 +7,8 @@ export function Reveal({ children, className, delay = 0, as = 'div' }: { childre
   return (
     <M
       className={className}
-      initial={{ opacity: 0, y: 32 }}
+      // 0.01, not 0: fully transparent elements don't count as painted, which delays LCP when a Reveal is above the fold.
+      initial={{ opacity: 0.01, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-8% 0px' }}
       transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}

@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { api, ApiError, type Me } from './api';
 import { inputCls } from './form/inputs';
+import { Topo } from '../site/ui/Topo';
 
 export function Login() {
   const qc = useQueryClient();
@@ -23,11 +24,11 @@ export function Login() {
   };
   return (
     <main className="relative grid min-h-screen place-items-center overflow-hidden bg-bg px-5">
-      <div aria-hidden className="hero-glow pointer-events-none absolute inset-0" />
+      <Topo className="text-fg/[0.08]" seed={5} rings={22} />
       <form onSubmit={submit} className="card relative flex w-full max-w-sm flex-col gap-5 p-7 shadow-2xl" noValidate>
         <div>
-          <p className="eyebrow">Faction Bikeworks</p>
-          <h1 className="mt-1 font-display text-4xl uppercase text-fg">Admin sign in</h1>
+          <p className="eyebrow">Faction Bikeworks · Admin</p>
+          <h1 className="display mt-3 text-4xl">Sign <span className="text-accent-ink">in.</span></h1>
         </div>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-semibold">Email</label>

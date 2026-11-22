@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { api, ApiError } from '../api';
 import { inputCls } from '../form/inputs';
-import { PageHeader } from './PageHeader';
+import { PageHeader } from '../ui';
 
 export function Account() {
   const [currentPassword, setCurrent] = useState('');
@@ -26,7 +26,7 @@ export function Account() {
   return (
     <div>
       <PageHeader title="My account" />
-      <form onSubmit={submit} className="card mx-5 flex max-w-md flex-col gap-4 p-6 sm:mx-8" noValidate>
+      <form onSubmit={submit} className="card flex max-w-md flex-col gap-4 p-6" noValidate>
         <h2 className="font-semibold">Change password</h2>
         {row('cur-pw', 'Current password', currentPassword, setCurrent, 'current-password')}
         {row('new-pw', 'New password (at least 10 characters)', newPassword, setNew, 'new-password')}

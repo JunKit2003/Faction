@@ -4,7 +4,7 @@ import { KeyRound, Trash2, UserPlus } from 'lucide-react';
 import { api, ApiError, type AdminUser, type Issue, type Me } from '../api';
 import { inputCls } from '../form/inputs';
 import { Modal } from '../Modal';
-import { PageHeader } from './PageHeader';
+import { PageHeader } from '../ui';
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Never');
 const issueMap = (issues?: Issue[]) => Object.fromEntries((issues ?? []).map((i) => [i.path, i.message]));
@@ -72,10 +72,10 @@ export function Admins({ me }: { me: Me }) {
   };
   return (
     <div>
-      <PageHeader title="Admins" intro="Everyone here can edit the whole site. Every change is recorded in the audit log."
+      <PageHeader title="Admins" description="Everyone here can edit the whole site. Every change is recorded in Activity."
         actions={<button type="button" onClick={() => setAdding(true)} className="btn btn-primary btn-sm"><UserPlus className="h-4 w-4" />Add admin</button>} />
-      {error && <p role="alert" className="mx-5 mb-3 text-sm text-red-500 sm:mx-8">{error}</p>}
-      <ul className="flex flex-col gap-2 px-5 pb-8 sm:px-8">
+      {error && <p role="alert" className="mb-3 text-sm text-red-500">{error}</p>}
+      <ul className="flex flex-col gap-2 px-5">
         {(users.data ?? []).map((u) => {
           const self = u.id === me.id;
           return (

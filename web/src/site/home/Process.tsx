@@ -18,7 +18,8 @@ export function Process() {
         <motion.span aria-hidden style={{ scaleX: reduce ? 1 : line }} className="absolute -top-6 left-0 hidden h-[2px] w-full origin-left bg-accent lg:block" />
         {p.steps.map((s, i) => (
           <Reveal as="li" key={i} delay={i * 0.1} className="card group relative flex min-h-[300px] flex-col justify-between overflow-hidden p-7 transition-colors duration-500 hover:border-accent/50 sm:p-9">
-            <span aria-hidden className="display text-outline pointer-events-none absolute -right-3 -top-6 text-[9rem] leading-none transition-[-webkit-text-stroke-color] duration-500 [--stroke:var(--line-strong)] group-hover:[--stroke:var(--accent)]">{String(i + 1).padStart(2, '0')}</span>
+            {/* Decorative number as generated content (not text), so it isn't treated as low-contrast copy. */}
+            <span aria-hidden data-num={String(i + 1).padStart(2, '0')} className="display text-outline pointer-events-none absolute -right-3 -top-6 text-[9rem] leading-none transition-[-webkit-text-stroke-color] duration-500 [--stroke:var(--line-strong)] before:content-[attr(data-num)] group-hover:[--stroke:var(--accent)]" />
             <span className="mono text-[11px] uppercase tracking-[0.2em] text-accent-ink">Step {String(i + 1).padStart(2, '0')}</span>
             <div className="relative flex flex-col gap-3">
               <h3 className="h3 text-3xl sm:text-4xl">{s.title}</h3>

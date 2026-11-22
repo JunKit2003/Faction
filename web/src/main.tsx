@@ -1,7 +1,6 @@
 import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
 import '@fontsource-variable/archivo/standard.css';
 import '@fontsource-variable/inter-tight/wght.css';
@@ -12,15 +11,19 @@ import './styles.css';
 import { ContentProvider } from './content/ContentContext';
 import { Layout } from './site/Layout';
 import Home from './site/pages/Home';
-import About from './site/pages/About';
-import Media from './site/pages/Media';
-import Faq from './site/pages/Faq';
-import Contact from './site/pages/Contact';
-import NotFound from './site/pages/NotFound';
+// Home ships in the main bundle; other pages load on demand (and are prefetched once the page is idle).
+const About = lazy(() => import('./site/pages/About'));
+const Media = lazy(() => import('./site/pages/Media'));
+const Faq = lazy(() => import('./site/pages/Faq'));
+const Contact = lazy(() => import('./site/pages/Contact'));
+const NotFound = lazy(() => import('./site/pages/NotFound'));
+const page = (el: React.ReactNode) => <Suspense fallback={<div className="min-h-screen" />}>{el}</Suspense>;
+if (typeof window !== 'undefined') {
+  const prefetch = () => { void import('./site/pages/About'); void import('./site/pages/Media'); void import('./site/pages/Faq'); void import('./site/pages/Contact'); };
+  window.addEventListener('load', () => (window.requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500)))(prefetch), { once: true });
+}
 
 const AdminApp = lazy(() => import('./admin/AdminApp'));
-
-const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } } });
 
 const router = createBrowserRouter([
   {
@@ -31,21 +34,19 @@ const router = createBrowserRouter([
     element: <ContentProvider fallback={<div className="min-h-screen bg-bg" />}><Layout /></ContentProvider>,
     children: [
       { index: true, element: <Home /> },
-      { path: 'about', element: <About /> },
-      { path: 'media', element: <Media /> },
-      { path: 'faq', element: <Faq /> },
-      { path: 'contact', element: <Contact /> },
-      { path: '*', element: <NotFound /> },
+      { path: 'about', element: page(<About />) },
+      { path: 'media', element: page(<Media />) },
+      { path: 'faq', element: page(<Faq />) },
+      { path: 'contact', element: page(<Contact />) },
+      { path: '*', element: page(<NotFound />) },
     ],
   },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <MotionConfig reducedMotion="user">
-        <RouterProvider router={router} />
-      </MotionConfig>
-    </QueryClientProvider>
+    <MotionConfig reducedMotion="user">
+      <RouterProvider router={router} />
+    </MotionConfig>
   </StrictMode>,
 );

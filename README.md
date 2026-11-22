@@ -93,15 +93,21 @@ The old addresses (`/about.html`, `/gallery.html`, …) permanently redirect to 
 
 ## For the shop: using the Admin Panel
 
-Go to `https://<your site>/admin` and sign in.
+Go to `https://<your site>/admin` and sign in. Press **⌘K / Ctrl+K** anywhere to jump straight to a setting (try “hours” or “logo”).
 
-- **Content:** one page per part of the site (Site settings, Home: Hero, Home: Services, …, FAQ, Footer, SEO). Change things, look at the live preview, then press **Save**. Changes go live immediately.
-  - Text fields marked as rich text understand `**bold**` and `[link text](/contact)`. In FAQ answers, `{hours}` is replaced with the opening hours.
-  - Lists (services, FAQs, stats, links) can be added, removed, and reordered by dragging or with the arrows.
-  - If someone else saved the same part while you were editing, you'll see *"Someone else changed this, reload to see their version."* Your edits stay on screen.
-- **Media library:** upload photos (JPG, PNG or WebP up to 15 MB). They're resized automatically and location data is removed. Alt text describes the photo and is its gallery caption. Photos that are in use can't be deleted.
-- **Admins:** add an admin, disable one, set a new password for one, or remove one. Nobody can remove themselves.
-- **Audit log:** shows who did what and when, with before and after. Open a content change to **restore** an earlier version.
+- **Dashboard:** open/closed right now, this week’s hours, photos missing descriptions, quick actions and the latest activity.
+- **Shop details:** name, address, WhatsApp number, opening hours, map, logos, accent colour, social links and small labels. Used all over the site.
+- **Homepage:** one tab per block, top to bottom (Top banner, Ticker, Services, Numbers, How it works, Why us, Visit us, Closing banner).
+- **Pages:** About, Media gallery, FAQ and Contact.
+- **Menu & footer**, and **Search & sharing** (Google titles and descriptions, share image).
+- **Photos:** upload (JPG, PNG or WebP up to 15 MB; resized automatically, location data removed). The description is used as the caption and for screen readers. Photos in use can't be deleted.
+- **Admins** and **Activity:** who can sign in, and who changed what, with before/after and **restore**.
+
+Editing works the same everywhere. Change things in the cards, watch the live preview, then press **Save changes**. Saved changes go live immediately, and **Discard** undoes everything you haven't saved. In lists (services, FAQs, links), press the pencil to edit an item in a pop-up, drag or use the arrows to reorder, and the bin to remove.
+
+Big headlines understand two marks: `_word_` draws the word as an outline, and `*word*` makes it lime. For example, `Ride _hard._ We’ll keep you *rolling.*`. Normal text understands `**bold**` and `[link text](/contact)`, and in FAQ answers `{hours}` is replaced with the opening hours.
+
+If someone else saved the same part while you were editing, you'll see *"Someone else changed this, reload to see their version."* Your edits stay on screen.
 
 ---
 

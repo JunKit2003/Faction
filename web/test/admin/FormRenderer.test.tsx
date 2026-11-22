@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormRenderer } from '../../src/admin/form/FormRenderer';
 import type { Field } from '../../src/admin/form/fields';
+
+afterEach(() => vi.restoreAllMocks());
 
 const fields: Field[] = [
   { name: 'title', label: 'Title', kind: 'text' },
@@ -19,37 +21,54 @@ function Harness({ issues = {}, onValue }: { issues?: Record<string, string>; on
   return <FormRenderer fields={fields} value={v} issues={issues} onChange={(n) => { setV(n as V); onValue?.(n as V); }} />;
 }
 
-describe('FormRenderer', () => {
-  it('edits a field inside a nested list item', async () => {
+describe('FormRenderer lists (rows + edit dialog)', () => {
+  it('shows each item as a row and edits it in a dialog', async () => {
     let last: V | undefined;
     render(<Harness onValue={(v) => (last = v)} />);
-    await userEvent.click(screen.getByRole('button', { name: /Q2/ }));
-    const q = screen.getByLabelText('Question');
+    const row = screen.getByRole('listitem', { name: 'Question 2' });
+    expect(row).toHaveTextContent('Q2');
+    expect(row).toHaveTextContent('A2');
+    await userEvent.click(within(row).getByRole('button', { name: 'Edit' }));
+    const dialog = screen.getByRole('dialog', { name: 'Question 2' });
+    const q = within(dialog).getByLabelText('Question');
     await userEvent.clear(q);
     await userEvent.type(q, 'Do you service e-MTBs?');
     expect(last!.items[1]!.q).toBe('Do you service e-MTBs?');
-    expect(last!.items[0]!.q).toBe('Q1');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Done' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('listitem', { name: 'Question 2' })).toHaveTextContent('Do you service e-MTBs?');
   });
 
-  it('reorders, adds and removes list items', async () => {
+  it('reorders, adds (opening the new item) and removes after confirming', async () => {
     let last: V | undefined;
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<Harness onValue={(v) => (last = v)} />);
-    const second = screen.getByRole('listitem', { name: 'Question 2' });
-    await userEvent.click(within(second).getByRole('button', { name: 'Move up' }));
+    await userEvent.click(within(screen.getByRole('listitem', { name: 'Question 2' })).getByRole('button', { name: 'Move up' }));
     expect(last!.items.map((i) => i.q)).toEqual(['Q2', 'Q1']);
     await userEvent.click(screen.getByRole('button', { name: 'Add question' }));
     expect(last!.items).toHaveLength(3);
-    expect(last!.items[2]).toEqual({ q: '', a: '' });
+    expect(screen.getByRole('dialog', { name: 'Question 3' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
     await userEvent.click(within(screen.getByRole('listitem', { name: 'Question 1' })).getByRole('button', { name: 'Remove' }));
+    expect(window.confirm).toHaveBeenCalled();
     expect(last!.items.map((i) => i.q)).toEqual(['Q1', '']);
   });
 
-  it('shows an issue on the right field and opens its item', () => {
+  it('keeps the item when removal is cancelled', async () => {
+    let last: V | undefined;
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    render(<Harness onValue={(v) => (last = v)} />);
+    await userEvent.click(within(screen.getByRole('listitem', { name: 'Question 1' })).getByRole('button', { name: 'Remove' }));
+    expect(last).toBeUndefined();
+  });
+
+  it('flags the row that has a problem and shows it in the dialog', async () => {
     render(<Harness issues={{ 'items.1.q': 'Question is required', title: 'Title is required' }} />);
     expect(screen.getByLabelText('Title')).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByText('Title is required')).toBeInTheDocument();
-    const q = screen.getByLabelText('Question');
-    expect(q).toHaveValue('Q2');
+    const row = screen.getByRole('listitem', { name: 'Question 2' });
+    expect(row).toHaveTextContent('Needs attention');
+    await userEvent.click(within(row).getByRole('button', { name: 'Edit' }));
+    const q = within(screen.getByRole('dialog')).getByLabelText('Question');
     expect(q).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('Question is required')).toBeInTheDocument();
   });

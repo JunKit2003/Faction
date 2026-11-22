@@ -51,7 +51,7 @@ export async function processImage(buf: Buffer, id: string, opts: { allowSvg: bo
   const widths = variantWidths(width);
   try {
     await Promise.all(widths.map((w) =>
-      oriented.clone().resize({ width: w, withoutEnlargement: true }).webp({ quality: 80 }).toFile(path.join(opts.uploadDir, `${id}-${w}.webp`))));
+      oriented.clone().resize({ width: w, withoutEnlargement: true }).webp({ quality: 74, effort: 5 }).toFile(path.join(opts.uploadDir, `${id}-${w}.webp`))));
   } catch {
     throw new HttpError(415, UPLOAD_COPY);
   }

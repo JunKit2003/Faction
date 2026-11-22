@@ -2,13 +2,19 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-/** Accessible dialog: focus moves in, Esc closes, focus returns to the opener. */
+const stack: number[] = [];
+let modalSeq = 0;
+
+/** Accessible dialog: focus moves in, Esc closes the topmost one, focus returns to the opener. */
 export function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const me = ++modalSeq;
+    stack.push(me);
     const opener = document.activeElement as HTMLElement | null;
     ref.current?.querySelector<HTMLElement>('input, button, select, textarea')?.focus();
     const onKey = (e: KeyboardEvent) => {
+      if (stack[stack.length - 1] !== me) return;
       if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
       if (e.key === 'Tab' && ref.current) {
         const f = [...ref.current.querySelectorAll<HTMLElement>('button:not([disabled]), input, select, textarea, a[href]')];
@@ -21,7 +27,7 @@ export function Modal({ title, onClose, children, wide }: { title: string; onClo
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; opener?.focus(); };
+    return () => { stack.splice(stack.indexOf(me), 1); document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; opener?.focus(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return createPortal(

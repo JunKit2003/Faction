@@ -16,7 +16,7 @@ export function PageHero({ eyebrow, title, intro, crumb }: { eyebrow?: string; t
         </div>
         {eyebrow && <p className="eyebrow mb-6">{eyebrow}</p>}
         <h1 className="h1 max-w-6xl [text-wrap:balance]" aria-label={plainDisplay(title)}>
-          <motion.span aria-hidden className="block" initial={{ clipPath: 'inset(0 0 100% 0)', y: 30 }} animate={{ clipPath: 'inset(0 0 0% 0)', y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+          <motion.span aria-hidden className="block" initial={{ y: 36 }} animate={{ y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
             <DisplayText text={title} />
           </motion.span>
         </h1>

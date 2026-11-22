@@ -39,9 +39,18 @@ export function Hero() {
   const current = slides[index % slides.length];
   const cardImage = slides[(index + 1) % slides.length];
   const words = plainDisplay(hero.title).split(/\s+/).length;
+  // The floating collage only exists on wide screens; don't even mount it (or fetch its photo) on phones.
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1280px)');
+    const on = () => setWide(mq.matches);
+    on();
+    mq.addEventListener?.('change', on);
+    return () => mq.removeEventListener?.('change', on);
+  }, []);
 
   return (
-    <section ref={ref} className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-black text-[#eceee4] [--stroke:#eceee4]">
+    <section ref={ref} className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-black text-[#eceee4] [--stroke:#eceee4] [--accent-ink:var(--accent)]">
       <motion.div aria-hidden style={reduce ? undefined : { y: imgY }} className="absolute inset-0 -z-10 will-change-transform">
         <AnimatePresence initial={false}>
           <motion.div key={current} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
@@ -63,7 +72,7 @@ export function Hero() {
       </div>
 
       {/* Floating collage card (desktop) */}
-      {cardImage && slides.length > 1 && (
+      {wide && cardImage && slides.length > 1 && (
         <motion.div style={reduce ? undefined : { y: cardY }} className="absolute right-[6vw] top-[22vh] hidden w-[19vw] max-w-[300px] xl:block">
           <motion.div initial={{ opacity: 0, rotate: 0, y: 40 }} animate={{ opacity: 1, rotate: 5, y: 0 }} transition={{ delay: 0.6, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden rounded-[22px] border border-white/15 bg-white/5 p-2 shadow-2xl backdrop-blur-md">
@@ -93,8 +102,8 @@ export function Hero() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="eyebrow mb-6 !text-accent">{hero.eyebrow}</motion.p>
         )}
         <h1 className="display max-w-[16ch] text-[clamp(3rem,9.6vw,9.5rem)] [text-wrap:balance]" aria-label={plainDisplay(hero.title)}>
-          <motion.span aria-hidden className="block" initial={{ clipPath: 'inset(0 0 100% 0)', y: 40 }} animate={{ clipPath: 'inset(0 0 0% 0)', y: 0 }}
-            transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}>
+          {/* Painted from the first frame (LCP): slide up only, never hidden. */}
+          <motion.span aria-hidden className="block" initial={{ y: 48 }} animate={{ y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}>
             <DisplayText text={hero.title} />
           </motion.span>
         </h1>

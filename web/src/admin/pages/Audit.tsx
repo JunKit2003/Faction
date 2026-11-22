@@ -5,7 +5,7 @@ import { SECTION_KEYS, SECTION_LABELS, isSectionKey } from '@faction/shared';
 import { api, ApiError, type AdminUser, type AuditItem } from '../api';
 import { inputCls } from '../form/inputs';
 import { AuditDiff } from './AuditDiff';
-import { PageHeader } from './PageHeader';
+import { PageHeader } from '../ui';
 
 export const ACTION_LABELS: Record<string, string> = {
   'section.update': 'Edited', 'section.restore': 'Restored',
@@ -15,7 +15,7 @@ export const ACTION_LABELS: Record<string, string> = {
   'auth.login': 'Signed in', 'auth.login_failed': 'Failed sign-in', 'auth.logout': 'Signed out',
 };
 
-function target(item: AuditItem, users: AdminUser[]): string {
+export function describeTarget(item: AuditItem, users: AdminUser[]): string {
   if (item.targetType === 'section') return isSectionKey(item.targetKey) ? SECTION_LABELS[item.targetKey] : item.targetKey;
   if (item.targetType === 'media') {
     const name = (item.after as { originalName?: string } | null)?.originalName ?? (item.before as { originalName?: string } | null)?.originalName;
@@ -62,8 +62,8 @@ export function Audit() {
   const sel = `${inputCls} py-2 text-sm`;
   return (
     <div>
-      <PageHeader title="Audit log" intro="Who changed what, and when. Open an entry to compare before and after, or restore a section." />
-      <div className="grid gap-3 px-5 sm:grid-cols-2 sm:px-8 xl:grid-cols-5">
+      <PageHeader title="Activity" description="Who changed what, and when. Open an entry to compare before and after, or restore a section." />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <label className="flex flex-col gap-1 text-xs font-semibold text-muted">Admin
           <select value={filters.userId} onChange={(e) => set('userId', e.target.value)} className={sel}><option value="">Everyone</option>{(users.data ?? []).map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}</select>
         </label>
@@ -76,8 +76,8 @@ export function Audit() {
         <label className="flex flex-col gap-1 text-xs font-semibold text-muted">From<input type="date" value={filters.from} onChange={(e) => set('from', e.target.value)} className={sel} /></label>
         <label className="flex flex-col gap-1 text-xs font-semibold text-muted">To<input type="date" value={filters.to} onChange={(e) => set('to', e.target.value)} className={sel} /></label>
       </div>
-      {msg && <p role="status" className="mx-5 mt-4 text-sm font-medium sm:mx-8">{msg}</p>}
-      <ul className="flex flex-col gap-2 px-5 py-5 sm:px-8">
+      {msg && <p role="status" className="mt-4 text-sm font-medium">{msg}</p>}
+      <ul className="flex flex-col gap-2 py-5">
         {(log.data?.items ?? []).map((item) => {
           const expanded = open === item.id;
           const hasDiff = item.before !== null || item.after !== null;
@@ -87,7 +87,7 @@ export function Audit() {
               <button type="button" onClick={() => setOpen(expanded ? null : item.id)} aria-expanded={expanded} disabled={!hasDiff}
                 className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left disabled:cursor-default">
                 <time dateTime={item.at} className="w-40 shrink-0 text-xs tabular-nums text-muted">{new Date(item.at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</time>
-                <span className="min-w-0 flex-1 text-sm"><span className="font-semibold">{item.userEmail || 'Unknown'}</span> <span className={item.action === 'auth.login_failed' ? 'text-red-500' : 'text-muted'}>{ACTION_LABELS[item.action] ?? item.action}</span> <span className="font-medium">{target(item, users.data ?? [])}</span></span>
+                <span className="min-w-0 flex-1 text-sm"><span className="font-semibold">{item.userEmail || 'Unknown'}</span> <span className={item.action === 'auth.login_failed' ? 'text-red-500' : 'text-muted'}>{ACTION_LABELS[item.action] ?? item.action}</span> <span className="font-medium">{describeTarget(item, users.data ?? [])}</span></span>
                 {hasDiff && <ChevronDown className={`h-4 w-4 text-muted transition-transform ${expanded ? 'rotate-180' : ''}`} />}
               </button>
               {expanded && (

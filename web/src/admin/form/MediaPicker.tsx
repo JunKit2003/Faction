@@ -9,7 +9,7 @@ import { useLibrary, useUpload } from '../media';
 import { Modal } from '../Modal';
 
 /** Logos and small or very wide images are shown whole rather than cropped. */
-export const fitContain = (m: Pick<LibraryItem, 'mime' | 'width' | 'height'>) => m.mime === 'image/svg+xml' || m.width < 600 || m.width / Math.max(1, m.height) > 2.2;
+export const fitContain = (m: Pick<LibraryItem, 'mime' | 'width' | 'height'>) => m.mime === 'image/svg+xml' || m.width < 300 || m.width / Math.max(1, m.height) > 2.2;
 
 function Thumb({ item, className = '' }: { item?: LibraryItem; className?: string }) {
   if (!item) return <div className={`grid place-items-center bg-fg/5 text-xs text-muted ${className}`}>Missing</div>;

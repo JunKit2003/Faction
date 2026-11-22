@@ -28,7 +28,15 @@ export default function PreviewHost() {
   useEffect(() => {
     if (!msg?.focus || msg.focus === lastFocus.current) return;
     lastFocus.current = msg.focus;
-    requestAnimationFrame(() => document.querySelector(`[data-section="${msg.focus}"]`)?.scrollIntoView({ block: 'start' }));
+    // Lower Home sections mount just after first paint, so keep looking for up to a second.
+    const sel = `[data-section="${msg.focus}"]`;
+    let tries = 0;
+    const find = () => {
+      const el = document.querySelector(sel);
+      if (el) el.scrollIntoView({ block: 'start' });
+      else if (tries++ < 30) setTimeout(find, 35);
+    };
+    find();
   }, [msg]);
   useEffect(() => { if (msg) document.documentElement.style.setProperty('--accent', msg.content.sections.site.accentColor); }, [msg]);
   if (!msg) return <div className="grid min-h-screen place-items-center text-muted">Loading preview…</div>;

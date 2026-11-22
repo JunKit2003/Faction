@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('public site', () => {
   for (const [path, heading] of [
-    ['/', 'Ride Hard. We’ll keep you rolling.'],
+    ['/', 'Ride hard. We’ll keep you rolling.'],
     ['/about', 'About Faction Bikeworks'],
     ['/media', 'Media Gallery'],
     ['/faq', 'FAQ'],

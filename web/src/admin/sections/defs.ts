@@ -1,6 +1,10 @@
 import type { SectionKey, SitePage } from '@faction/shared';
 import type { Field, Option } from '../form/fields';
 
+export const DISPLAY_HINT = 'Big headline. Wrap words in _underscores_ to outline them, or *stars* to make them lime.';
+const eyebrow = (hint = 'Small label above the title.'): Field => ({ name: 'eyebrow', label: 'Small label', kind: 'text', hint });
+const display = (name: string, label: string): Field => ({ name, label, kind: 'text', hint: DISPLAY_HINT });
+
 const PAGES: Option[] = [
   { value: '/', label: 'Home' }, { value: '/about', label: 'About' }, { value: '/media', label: 'Media' }, { value: '/faq', label: 'FAQ' }, { value: '/contact', label: 'Contact' },
 ];
@@ -42,13 +46,16 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
         ],
       },
       {
-        name: 'labels', label: 'Info labels', kind: 'group', hint: 'Headings shown next to the hours, address and contact details.',
+        name: 'labels', label: 'Labels', kind: 'group', hint: 'Small words used around the site.',
         fields: [
-          { name: 'hours', label: 'Hours label', kind: 'text' },
-          { name: 'address', label: 'Address label', kind: 'text' },
-          { name: 'contact', label: 'Contact label', kind: 'text' },
+          { name: 'open', label: 'When open', kind: 'text', hint: 'Shown with a green dot during opening hours.' },
+          { name: 'closed', label: 'When closed', kind: 'text', hint: 'Shown with a red dot outside opening hours.' },
+          { name: 'hours', label: 'Hours heading', kind: 'text' },
+          { name: 'address', label: 'Address heading', kind: 'text' },
+          { name: 'contact', label: 'Contact heading', kind: 'text' },
         ],
       },
+      { name: 'coordinates', label: 'Map coordinates', kind: 'text', hint: 'Shown as a small readout, e.g. 3.1434° N, 101.6324° E. Leave empty to hide.' },
     ],
   },
   nav: {
@@ -68,8 +75,11 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   'home.hero': {
     preview: 'home',
     fields: [
-      { name: 'title', label: 'Headline', kind: 'text' },
+      eyebrow('Small label above the headline.'),
+      display('title', 'Headline'),
       { name: 'text', label: 'Text', kind: 'textarea' },
+      { name: 'badgeTitle', label: 'Floating card title', kind: 'text', hint: 'The small card beside the photo on big screens. Leave both empty to hide.' },
+      { name: 'badgeText', label: 'Floating card text', kind: 'text' },
       link('primary', 'Main button'),
       link('secondary', 'Second button'),
       { name: 'slideIds', label: 'Background images', kind: 'mediaList', hint: 'They fade from one to the next. The first loads first.' },
@@ -82,8 +92,8 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   'home.reasons': {
     preview: 'home',
     fields: [
-      { name: 'eyebrow', label: 'Small label', kind: 'text' },
-      { name: 'title', label: 'Title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Title'),
       { name: 'items', label: 'Reasons', kind: 'list', itemLabel: 'Reason', newItem: { icon: 'wrench', title: '', text: '' }, fields: [
         { name: 'title', label: 'Title', kind: 'text' },
         { name: 'icon', label: 'Icon', kind: 'select', options: ['wrench', 'clock', 'map', 'shield', 'bike', 'zap', 'heart', 'star'].map((v) => ({ value: v, label: v })) },
@@ -94,7 +104,7 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   'home.closer': {
     preview: 'home',
     fields: [
-      { name: 'title', label: 'Big line', kind: 'text' },
+      display('title', 'Big line'),
       { name: 'text', label: 'Text', kind: 'textarea' },
       { name: 'buttonLabel', label: 'Button text', kind: 'text' },
       { name: 'href', label: 'Button goes to', kind: 'text' },
@@ -103,7 +113,8 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   'home.services': {
     preview: 'home',
     fields: [
-      { name: 'title', label: 'Title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Title'),
       { name: 'subtitle', label: 'Subtitle', kind: 'textarea' },
       { name: 'items', label: 'Services', kind: 'list', itemLabel: 'Service', newItem: { title: '', text: '', mediaId: '' }, fields: [
         { name: 'title', label: 'Title', kind: 'text' },
@@ -125,7 +136,8 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   'home.process': {
     preview: 'home',
     fields: [
-      { name: 'title', label: 'Title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Title'),
       { name: 'steps', label: 'Steps', kind: 'list', itemLabel: 'Step', newItem: { title: '', text: '' }, fields: [
         { name: 'title', label: 'Title', kind: 'text' },
         { name: 'text', label: 'Text', kind: 'textarea' },
@@ -136,19 +148,24 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
     preview: 'home',
     help: 'The map link itself is in Site settings.',
     fields: [
-      { name: 'title', label: 'Title', kind: 'text' },
+      eyebrow(),
+      { name: 'title', label: 'Title', kind: 'text', hint: 'Wrap words in *stars* to highlight them in lime.' },
       { name: 'subtitle', label: 'Subtitle', kind: 'textarea' },
     ],
   },
   about: {
     preview: 'about',
     fields: [
-      { name: 'title', label: 'Page title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Page title'),
       { name: 'intro', label: 'Intro', kind: 'textarea' },
-      { name: 'storyTitle', label: 'Story heading', kind: 'text' },
+      display('storyTitle', 'Story heading'),
       { name: 'story', label: 'Story paragraphs', kind: 'list', itemLabel: 'Paragraph', newItem: '', itemKind: 'rich' },
-      { name: 'imageId', label: 'Story image', kind: 'media' },
-      { name: 'findTitle', label: '“Where to find us” heading', kind: 'text' },
+      { name: 'imageId', label: 'Main photo', kind: 'media' },
+      { name: 'secondImageId', label: 'Overlapping photo', kind: 'media', hint: 'Optional smaller photo tilted over the corner.' },
+      { name: 'badge', label: 'Spinning badge text', kind: 'text', hint: 'e.g. Est. 2022 · Bukit Kiara ·  Leave empty to hide.' },
+      { name: 'quote', label: 'Big quote', kind: 'textarea', hint: 'Shown on a lime band. Leave empty to hide.' },
+      display('findTitle', '“Where to find us” heading'),
       { name: 'findText', label: '“Where to find us” text', kind: 'rich' },
       { name: 'contactLabel', label: 'Contact link text', kind: 'text' },
     ],
@@ -156,15 +173,20 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
   media: {
     preview: 'media',
     fields: [
-      { name: 'title', label: 'Page title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Page title'),
       { name: 'imageIds', label: 'Gallery', kind: 'mediaList', hint: 'Each image’s alt text is used as its caption. Edit it in the Media library.' },
     ],
   },
   faq: {
     preview: 'faq',
     fields: [
-      { name: 'title', label: 'Page title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Page title'),
       { name: 'intro', label: 'Intro', kind: 'textarea' },
+      display('askTitle', '“Ask the mechanic” card title'),
+      { name: 'askText', label: '“Ask the mechanic” card text', kind: 'textarea' },
+      { name: 'askButton', label: '“Ask the mechanic” button', kind: 'text', hint: 'Opens WhatsApp. Leave the card title empty to hide the card.' },
       { name: 'items', label: 'Questions', kind: 'list', itemLabel: 'Question', newItem: { q: '', a: '' }, fields: [
         { name: 'q', label: 'Question', kind: 'text' },
         { name: 'a', label: 'Answer', kind: 'rich', hint: 'Use **bold** and [link text](/contact). Write {hours} to show the opening hours.' },
@@ -175,7 +197,8 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
     preview: 'contact',
     help: 'Hours, address, WhatsApp number and map are in Site settings.',
     fields: [
-      { name: 'title', label: 'Page title', kind: 'text' },
+      eyebrow(),
+      display('title', 'Page title'),
       { name: 'intro', label: 'Intro', kind: 'textarea' },
       { name: 'getInTouchTitle', label: '“Get in touch” heading', kind: 'text' },
       { name: 'formTitle', label: 'Form heading', kind: 'text' },

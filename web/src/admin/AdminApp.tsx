@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { Navigate, Route, Routes, useParams } from 'react-router';
 import { isSectionKey } from '@faction/shared';
 import { useMe } from './auth';
 import { Login } from './Login';
 import { Shell } from './Shell';
-import { SectionEditor } from './pages/SectionEditor';
+import { PageEditor } from './pages/PageEditor';
+import { Dashboard } from './pages/Dashboard';
+import { ADMIN_PAGES, findTabForSection } from './structure';
+import { ToastProvider } from './Toast';
 import { MediaLibrary } from './pages/MediaLibrary';
 import { Admins } from './pages/Admins';
 import { Audit } from './pages/Audit';
@@ -13,13 +16,21 @@ import { Account } from './pages/Account';
 
 const PreviewHost = lazy(() => import('./PreviewHost'));
 
-function SectionRoute() {
+/** Old links (/admin/sections/:key) go to the page and tab that now holds that section. */
+function SectionRedirect() {
   const { key = '' } = useParams();
-  if (!isSectionKey(key)) return <Navigate to="/admin/sections/site" replace />;
-  return <SectionEditor key={key} sectionKey={key} />;
+  const where = isSectionKey(key) ? findTabForSection(key) : null;
+  return <Navigate to={where ? `/admin/${where.page}/${where.tab}` : '/admin'} replace />;
 }
 
+const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } } });
+
+/** The query library lives with the admin only, so the public site doesn't download it. */
 export default function AdminApp() {
+  return <QueryClientProvider client={queryClient}><AdminRoutes /></QueryClientProvider>;
+}
+
+function AdminRoutes() {
   const me = useMe();
   const qc = useQueryClient();
   useEffect(() => {
@@ -34,17 +45,22 @@ export default function AdminApp() {
         me.isLoading ? <div className="grid min-h-screen place-items-center text-muted">Loading…</div>
           : !me.data ? <Login />
           : (
+            <ToastProvider>
             <Shell me={me.data}>
               <Routes>
-                <Route index element={<Navigate to="sections/site" replace />} />
-                <Route path="sections/:key" element={<SectionRoute />} />
-                <Route path="media" element={<MediaLibrary />} />
+                <Route index element={<Dashboard me={me.data} />} />
+                {ADMIN_PAGES.map((p) => <Route key={p.id} path={`${p.id}/:tab?`} element={<PageEditor key={p.id} pageId={p.id} />} />)}
+                <Route path="sections/:key" element={<SectionRedirect />} />
+                <Route path="photos" element={<MediaLibrary />} />
+                <Route path="media" element={<Navigate to="/admin/photos" replace />} />
                 <Route path="admins" element={<Admins me={me.data} />} />
-                <Route path="audit" element={<Audit />} />
+                <Route path="activity" element={<Audit />} />
+                <Route path="audit" element={<Navigate to="/admin/activity" replace />} />
                 <Route path="account" element={<Account />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </Shell>
+            </ToastProvider>
           )
       } />
     </Routes>

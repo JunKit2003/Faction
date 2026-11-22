@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import Lenis from 'lenis';
 
 /** Inertia scrolling on desktop pointers only; off for touch and reduced motion. */
 export function SmoothScroll() {
@@ -7,11 +6,16 @@ export function SmoothScroll() {
     const fine = window.matchMedia('(pointer: fine)').matches;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!fine || reduce) return;
-    const lenis = new Lenis({ lerp: 0.12, anchors: true });
     let raf = 0;
-    const loop = (t: number) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
-    raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); lenis.destroy(); };
+    let lenis: { raf: (t: number) => void; destroy: () => void } | null = null;
+    let cancelled = false;
+    void import('lenis').then(({ default: Lenis }) => {
+      if (cancelled) return;
+      lenis = new Lenis({ lerp: 0.12, anchors: true });
+      const loop = (t: number) => { lenis!.raf(t); raf = requestAnimationFrame(loop); };
+      raf = requestAnimationFrame(loop);
+    });
+    return () => { cancelled = true; cancelAnimationFrame(raf); lenis?.destroy(); };
   }, []);
   return null;
 }
