@@ -10,11 +10,12 @@ afterEach(() => { window.matchMedia = realMatchMedia; vi.useRealTimers(); });
 describe('Stats', () => {
   it('shows final values immediately with reduced motion', () => {
     window.matchMedia = ((q: string) => ({ matches: q.includes('reduce'), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} })) as never;
-    renderWithContent(<Stats />);
-    expect(screen.getByText('1,800+')).toBeInTheDocument();
-    expect(screen.getByText('500+')).toBeInTheDocument();
-    expect(screen.getByText('5.0★')).toBeInTheDocument();
-    expect(screen.getByText(`${yearsSince(2022)}+`)).toBeInTheDocument();
+    const { container } = renderWithContent(<Stats />);
+    const visible = [...container.querySelectorAll('span[aria-hidden="true"]')].map((e) => e.textContent);
+    const spoken = [...container.querySelectorAll('.sr-only')].map((e) => e.textContent);
+    const expected = ['1,800+', '500+', '5.0★', `${yearsSince(2022)}+`];
+    expect(visible).toEqual(expected);
+    expect(spoken).toEqual(expected);
     expect(screen.getByText('21 Google Reviews')).toBeInTheDocument();
   });
 });

@@ -1,5 +1,6 @@
 import express, { type Express } from 'express';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import { sql, type Kysely } from 'kysely';
 import type { Config } from './config.js';
 import type { DB } from './db/types.js';
@@ -21,6 +22,7 @@ export function createApp({ db, cfg }: AppDeps): Express {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback, linklocal, uniquelocal');
+  app.use(compression());
 
   app.get('/healthz', async (_req, res) => {
     try {

@@ -19,6 +19,8 @@
     "e2e": "playwright test -c e2e/playwright.config.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.1"
+    "@playwright/test": "^1.65.1",
+    "mysql2": "^3.24.6",
+    "pg": "^8.23.1"
   }
 }

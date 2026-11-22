@@ -30,6 +30,17 @@ describe('migrations', () => {
   });
 });
 
+import path from 'node:path';
+import { loadConfig } from '../src/config.js';
+describe('config', () => {
+  it('resolves a relative UPLOAD_DIR against the project root, not the current folder', () => {
+    const root = path.resolve(import.meta.dirname, '../..');
+    expect(loadConfig({ DB_CLIENT: 'pg', DATABASE_URL: 'x', UPLOAD_DIR: './uploads' }).uploadDir).toBe(path.join(root, 'uploads'));
+    expect(loadConfig({ DB_CLIENT: 'pg', DATABASE_URL: 'x' }).uploadDir).toBe(path.join(root, 'uploads'));
+    expect(loadConfig({ DB_CLIENT: 'pg', DATABASE_URL: 'x', UPLOAD_DIR: '/srv/faction/uploads' }).uploadDir).toBe('/srv/faction/uploads');
+  });
+});
+
 describe('ids', () => {
   it('newId is 26 chars and sorts by creation time', async () => {
     const a = newId();

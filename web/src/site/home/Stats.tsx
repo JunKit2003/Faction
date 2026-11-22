@@ -24,7 +24,8 @@ function CountUp({ text }: { text: string }) {
   }, [inView, reduce, text]);
 
   return (
-    <span ref={ref} aria-label={text}>
+    <span ref={ref}>
+      <span className="sr-only">{text}</span>
       <span aria-hidden="true">{shown}</span>
     </span>
   );

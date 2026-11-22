@@ -11,7 +11,8 @@ beforeAll(async () => {
   const dist = fs.mkdtempSync(path.join(os.tmpdir(), 'faction-dist-'));
   fs.writeFileSync(path.join(dist, 'index.html'), '<!doctype html><html lang="en"><head><meta charset="utf-8"><!--app-head--><script type="module" src="/assets/app.js"></script></head><body><div id="root"></div><!--app-data--></body></html>');
   fs.mkdirSync(path.join(dist, 'assets'));
-  fs.writeFileSync(path.join(dist, 'assets', 'app.js'), 'console.log(1)');
+  fs.writeFileSync(path.join(dist, 'assets', 'app.js'), 'console.log(1);'.repeat(500));
+  fs.writeFileSync(path.join(dist, 'assets', 'anton-latin-400-normal-AbC123.woff2'), 'font');
   ctx = await setupTestApp({ webDist: dist });
   await seedIfEmpty(ctx.db, ctx.cfg);
 }, 120_000);
@@ -93,6 +94,23 @@ describe('pages', () => {
     const res = await request(ctx.app).get('/assets/app.js');
     expect(res.status).toBe(200);
     expect(res.headers['cache-control']).toContain('immutable');
+  });
+
+  it('compresses HTML, assets and API responses', async () => {
+    for (const url of ['/', '/assets/app.js', '/api/content']) {
+      const res = await request(ctx.app).get(url).set('Accept-Encoding', 'gzip');
+      expect(res.headers['content-encoding'], url).toBe('gzip');
+    }
+  });
+
+  it('preloads the headline font so the hero does not jump', async () => {
+    const res = await request(ctx.app).get('/');
+    expect(res.text).toContain('<link rel="preload" href="/assets/anton-latin-400-normal-AbC123.woff2" as="font" type="font/woff2" crossorigin>');
+  });
+
+  it('404s (not 500s) for missing upload files', async () => {
+    const res = await request(ctx.app).get('/uploads/missing-960.webp');
+    expect(res.status).toBe(404);
   });
 
   it('keeps unknown API paths as JSON 404', async () => {

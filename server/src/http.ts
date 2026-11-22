@@ -31,6 +31,11 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     res.status(400).json({ error: 'Invalid JSON body.' });
     return;
   }
+  const status = (err as { status?: number; statusCode?: number })?.status ?? (err as { statusCode?: number })?.statusCode;
+  if (typeof status === 'number' && status >= 400 && status < 500) {
+    res.status(status).json({ error: status === 404 ? 'Not found.' : 'Bad request.' });
+    return;
+  }
   console.error(err);
   res.status(500).json({ error: 'Something went wrong. Please try again.' });
 };

@@ -43,7 +43,13 @@ export function spaRoutes(db: Kysely<DB>, cfg: Config): Router {
   const r = Router();
   const indexPath = path.join(cfg.webDist, 'index.html');
   if (!fs.existsSync(indexPath)) return r;
-  const template = fs.readFileSync(indexPath, 'utf8');
+  // Preload the self-hosted headline font so the hero headline doesn't reflow when it arrives.
+  const assetsDir = path.join(cfg.webDist, 'assets');
+  const fontPreload = (fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : [])
+    .filter((f) => /^anton-latin-400-normal-.*\.woff2$/.test(f))
+    .map((f) => `<link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin>`)
+    .join('');
+  const template = fs.readFileSync(indexPath, 'utf8').replace('<!--app-head-->', `${fontPreload}<!--app-head-->`);
 
   r.use('/assets', express.static(path.join(cfg.webDist, 'assets'), { immutable: true, maxAge: '365d', fallthrough: false }));
   r.use(express.static(cfg.webDist, { index: false, maxAge: '1h' }));

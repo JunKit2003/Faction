@@ -1,5 +1,8 @@
 import path from 'node:path';
 
+/** Repository root (works from server/src via tsx and from the bundled server/dist). */
+export const PROJECT_ROOT = path.resolve(import.meta.dirname, '../..');
+
 export type DbClient = 'mysql' | 'pg';
 
 export interface Config {
@@ -23,9 +26,9 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     dbClient,
     databaseUrl: env.DATABASE_URL,
     port: Number(env.PORT ?? 3000),
-    uploadDir: path.resolve(env.UPLOAD_DIR ?? './uploads'),
+    uploadDir: path.resolve(PROJECT_ROOT, env.UPLOAD_DIR || './uploads'),
     publicBaseUrl: (env.PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, ''),
-    webDist: path.resolve(env.WEB_DIST ?? path.join(import.meta.dirname, '../../web/dist')),
+    webDist: path.resolve(PROJECT_ROOT, env.WEB_DIST || 'web/dist'),
     isProd: env.NODE_ENV === 'production',
     bootstrap: {
       email: env.ADMIN_BOOTSTRAP_EMAIL || undefined,
