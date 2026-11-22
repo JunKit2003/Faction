@@ -78,7 +78,7 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
       eyebrow('Small label above the headline.'),
       display('title', 'Headline'),
       { name: 'text', label: 'Text', kind: 'textarea' },
-      { name: 'badgeTitle', label: 'Floating card title', kind: 'text', hint: 'The small card beside the photo on big screens. Leave both empty to hide.' },
+      { name: 'badgeTitle', label: 'Floating card title', kind: 'text', hint: 'The small card beside the headline on big screens. Leave the title, text and photos empty to hide it.' },
       { name: 'badgeText', label: 'Floating card text', kind: 'text' },
       { name: 'badgeImageIds', label: 'Floating card photos', kind: 'mediaList', hint: 'Its own photos, separate from the banner. They take turns. Leave empty for a text-only card.' },
       link('primary', 'Main button'),

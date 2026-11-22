@@ -16,6 +16,15 @@ import { Account } from './pages/Account';
 
 const PreviewHost = lazy(() => import('./PreviewHost'));
 
+/** Blue admin theme on <body> so dialogs, toasts and the jump-to search (portalled to body) match. Not used in the preview iframe. */
+function AdminTheme() {
+  useEffect(() => {
+    document.body.classList.add('admin-theme');
+    return () => document.body.classList.remove('admin-theme');
+  }, []);
+  return null;
+}
+
 /** Old links (/admin/sections/:key) go to the page and tab that now holds that section. */
 function SectionRedirect() {
   const { key = '' } = useParams();
@@ -41,7 +50,7 @@ function AdminRoutes() {
   return (
     <Routes>
       <Route path="__preview" element={<Suspense fallback={null}><PreviewHost /></Suspense>} />
-      <Route path="*" element={
+      <Route path="*" element={<><AdminTheme />{
         me.isLoading ? <div className="grid min-h-screen place-items-center text-muted">Loading…</div>
           : !me.data ? <Login />
           : (
@@ -62,7 +71,7 @@ function AdminRoutes() {
             </Shell>
             </ToastProvider>
           )
-      } />
+      }</>} />
     </Routes>
   );
 }

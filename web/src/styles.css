@@ -120,3 +120,14 @@
 
 @keyframes marquee { to { transform: translateX(-100%); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Admin panel uses a calm blue instead of the site's lime (the live preview iframe still shows the real site colours). */
+.admin-theme {
+  --accent: #38bdf8;
+  --on-accent: #03121b;
+  --accent-ink: #0369a1;
+  --mark-bg: #38bdf8;
+}
+@media (prefers-color-scheme: dark) {
+  .admin-theme { --accent-ink: #38bdf8; }
+}
