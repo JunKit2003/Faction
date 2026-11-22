@@ -1,0 +1,133 @@
+@import 'tailwindcss';
+
+/* Dark is the brand; light follows the device for people who ask for it. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+:root {
+  --accent: #c6ff3d;
+  --on-accent: #0b0c0a;
+  --bg: #f3f3ee;
+  --surface: #ffffff;
+  --surface-2: #e9eae2;
+  --fg: #0b0c0a;
+  --muted: #565b4e;
+  --line: rgb(11 12 10 / 0.12);
+  --line-strong: rgb(11 12 10 / 0.24);
+  /* Lime is unreadable on white, so accent-coloured text gets a deep olive in light mode. */
+  --accent-ink: color-mix(in oklab, var(--accent) 38%, #1b2400);
+  --mark-bg: var(--accent);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0c0a;
+    --surface: #121410;
+    --surface-2: #171a14;
+    --fg: #eceee4;
+    --muted: #9ca191;
+    --line: rgb(236 238 228 / 0.09);
+    --line-strong: rgb(236 238 228 / 0.2);
+    --accent-ink: var(--accent);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: 'Inter Tight Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Archivo Variable', 'Arial Black', 'Helvetica Neue', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Archivo at its widest, heaviest: the brand's voice. */
+@utility display { font-family: var(--font-display); font-weight: 850; font-stretch: 125%; text-transform: uppercase; letter-spacing: -0.02em; word-spacing: 0.1em; line-height: 0.88; }
+@utility mono { font-family: var(--font-mono); }
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent); color: var(--on-accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  img { max-width: 100%; height: auto; }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-[1360px] px-5 sm:px-8 lg:px-12; }
+
+  .h1 { @apply display text-[clamp(2.8rem,8.6vw,8.25rem)] text-fg; }
+  .h2-xl { @apply display text-[clamp(2.3rem,6.2vw,5.6rem)] text-fg; }
+  .h2 { @apply display text-[clamp(1.9rem,4vw,3.2rem)] text-fg; }
+  .h3 { font-family: var(--font-display); font-weight: 800; font-stretch: 112%; text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.95; }
+  .lead { @apply text-lg leading-relaxed text-muted sm:text-xl; }
+  .eyebrow { @apply mono inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-accent-ink; }
+  .eyebrow::before { content: '◆'; font-size: 0.8em; }
+  .tag { @apply mono inline-flex items-center gap-1.5 rounded-full border border-line-strong px-2.5 py-1 text-[10.5px] font-medium uppercase tracking-[0.14em] text-fg/80; }
+  .card { @apply rounded-[26px] border border-line bg-surface; }
+
+  /* Outline colour comes from --stroke (defaults to the text colour of the theme). */
+  .text-outline { color: transparent; -webkit-text-stroke-width: 0.035em; -webkit-text-stroke-color: var(--stroke, var(--fg)); }
+  @supports not (-webkit-text-stroke: 1px black) { .text-outline { color: inherit; opacity: 0.6; } }
+  .mark-accent { background: var(--mark-bg); color: var(--on-accent); padding: 0 0.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-6 py-3 text-[13px] font-bold uppercase tracking-[0.08em] transition-[transform,background,color,box-shadow,border-color] duration-300 active:scale-[0.97];
+    font-family: var(--font-display); font-stretch: 112%;
+  }
+  .btn-sm { @apply px-4 py-2.5 text-[11.5px]; }
+  .btn-lg { @apply px-8 py-4 text-sm; }
+  .btn-primary { @apply bg-accent text-on-accent shadow-[0_0_0_0_var(--accent)] hover:shadow-[0_12px_40px_-12px_var(--accent)]; }
+  .btn-ghost { @apply border border-line-strong text-fg hover:border-fg; }
+  .btn-ghost-light { @apply border border-white/35 text-white backdrop-blur-sm hover:border-white hover:bg-white hover:text-black; }
+
+  .link-underline {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.35s var(--ease-expo);
+  }
+  .link-underline:hover, .link-underline:focus-visible { background-size: 100% 1px; }
+
+  .skip-link { @apply fixed left-4 top-4 z-[200] -translate-y-24 rounded-full bg-accent px-5 py-3 font-semibold text-on-accent transition-transform focus:translate-y-0; }
+
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .grid-lines {
+    background-image: linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 88px 88px;
+  }
+
+  .marquee-left { animation: marquee 42s linear infinite; }
+  .marquee-right { animation: marquee 48s linear infinite reverse; }
+  .spin-slow { animation: spin 22s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .marquee-left, .marquee-right, .spin-slow { animation: none; } }
+
+  @media (prefers-color-scheme: dark) {
+    .map-frame { filter: invert(0.92) hue-rotate(180deg) saturate(0.55) brightness(0.92) contrast(0.95); }
+  }
+}
+
+@keyframes marquee { to { transform: translateX(-100%); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Admin panel uses a calm blue instead of the site's lime (the live preview iframe still shows the real site colours). */
+.admin-theme {
+  --accent: #38bdf8;
+  --on-accent: #03121b;
+  --accent-ink: #0369a1;
+  --mark-bg: #38bdf8;
+}
+@media (prefers-color-scheme: dark) {
+  .admin-theme { --accent-ink: #38bdf8; }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "faction-bikeworks",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "dev": "npm run dev -w server & npm run dev -w web",
+    "build": "npm run build -w shared && npm run build -w web && npm run build -w server",
+    "start": "npm run start -w server",
+    "test": "npm test -w shared && npm run test:pg -w server && npm run test:mysql -w server && npm test -w web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "e2e": "playwright test -c e2e/playwright.config.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "mysql2": "^3.24.6",
+    "pg": "^8.23.1"
+  }
+}
