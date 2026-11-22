@@ -21,7 +21,7 @@ function csp(nonce: string) {
     "img-src 'self' data: blob:",
     "font-src 'self'",
     "connect-src 'self'",
-    'frame-src https://www.google.com',
+    "frame-src 'self' https://www.google.com",
     "frame-ancestors 'self'",
     "base-uri 'self'",
     "form-action 'self'",

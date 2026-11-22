@@ -8,7 +8,7 @@ const isInternal = (href: string) => href.startsWith('/') || href.startsWith('#'
 export function Footer() {
   const f = useSection('footer');
   return (
-    <footer className="relative overflow-hidden border-t border-line bg-surface">
+    <footer data-section="footer" className="relative overflow-hidden border-t border-line bg-surface">
       <div className="container-x grid gap-12 py-16 sm:py-20 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div className="flex flex-col gap-5">
           <Logo className="h-10 w-auto self-start" />

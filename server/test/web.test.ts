@@ -79,7 +79,7 @@ describe('pages', () => {
     const res = await request(ctx.app).get('/contact');
     const csp = res.headers['content-security-policy']!;
     expect(csp).toContain("default-src 'self'");
-    expect(csp).toContain('frame-src https://www.google.com');
+    expect(csp).toContain("frame-src 'self' https://www.google.com");
     expect(res.headers['x-content-type-options']).toBe('nosniff');
   });
 

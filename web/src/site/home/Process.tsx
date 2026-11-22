@@ -11,7 +11,7 @@ export function Process() {
   const line = useTransform(scrollYProgress, [0, 1], [0, 1]);
   if (!p.steps.length) return null;
   return (
-    <section className="container-x py-24 sm:py-32">
+    <section data-section="home.process" className="container-x py-24 sm:py-32">
       <Reveal className="mb-16"><h2 className="h2-xl">{p.title}</h2></Reveal>
       <div ref={ref} className="relative">
         <div aria-hidden className="absolute left-6 top-0 h-full w-px bg-line lg:left-0 lg:top-6 lg:h-px lg:w-full" />

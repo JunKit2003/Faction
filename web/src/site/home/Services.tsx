@@ -48,7 +48,7 @@ function TiltCard({ item, index }: { item: Item; index: number }) {
 export function Services() {
   const s = useSection('home.services');
   return (
-    <section className="container-x py-24 sm:py-32">
+    <section data-section="home.services" className="container-x py-24 sm:py-32">
       <Reveal className="mb-14 flex flex-col gap-4 sm:mb-20">
         <h2 className="h2-xl">{s.title}</h2>
         {s.subtitle && <p className="lead max-w-2xl">{s.subtitle}</p>}

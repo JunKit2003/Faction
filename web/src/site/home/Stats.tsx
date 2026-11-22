@@ -35,7 +35,7 @@ export function Stats() {
   const { openedYear } = useSection('site');
   if (!items.length) return null;
   return (
-    <section aria-label="Shop in numbers" className="relative overflow-hidden border-y border-line bg-surface">
+    <section data-section="home.stats" aria-label="Shop in numbers" className="relative overflow-hidden border-y border-line bg-surface">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_120%_at_50%_0%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_70%)]" />
       <div className="container-x relative grid grid-cols-2 lg:grid-cols-4">
         {items.map((s, i) => {
