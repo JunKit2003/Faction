@@ -43,7 +43,7 @@ export const ADMIN_PAGES: PageDef[] = [
         card('home.hero', 'Headline', ['eyebrow', 'title', 'text']),
         card('home.hero', 'Buttons', ['primary', 'secondary']),
         card('home.hero', 'Photos', ['slideIds'], 'They fade from one to the next. The first one loads first.'),
-        card('home.hero', 'Floating card', ['badgeTitle', 'badgeText']),
+        card('home.hero', 'Floating card', ['badgeTitle', 'badgeText', 'badgeImageIds'], 'The small photo card beside the headline on big screens.'),
       ] },
       { id: 'ticker', label: 'Ticker', preview: 'home', focus: 'home.services', cards: [card('home.ticker', 'Ticker words', ['items'], 'The scrolling lime tape under the banner. Empty uses your service names.')] },
       { id: 'services', label: 'Services', preview: 'home', focus: 'home.services', cards: [

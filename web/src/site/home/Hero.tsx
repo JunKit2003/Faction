@@ -37,7 +37,16 @@ export function Hero() {
   }, [index, reduce, slides.length]);
 
   const current = slides[index % slides.length];
-  const cardImage = slides[(index + 1) % slides.length];
+  // The floating card has its own photos (Homepage → Top banner → Floating card), on its own slower cycle.
+  const cardPhotos = hero.badgeImageIds;
+  const [cardIndex, setCardIndex] = useState(0);
+  useEffect(() => {
+    if (reduce || cardPhotos.length < 2) return;
+    const t = setTimeout(() => setCardIndex((i) => (i + 1) % cardPhotos.length), SLIDE_MS + 1500);
+    return () => clearTimeout(t);
+  }, [cardIndex, reduce, cardPhotos.length]);
+  const cardImage = cardPhotos[cardIndex % Math.max(1, cardPhotos.length)];
+  const hasCard = !!(cardImage || hero.badgeTitle || hero.badgeText);
   const words = plainDisplay(hero.title).split(/\s+/).length;
   // The floating collage only exists on wide screens; don't even mount it (or fetch its photo) on phones.
   const [wide, setWide] = useState(false);
@@ -71,25 +80,27 @@ export function Hero() {
         {site.coordinates && <p className="mono hidden text-[11px] uppercase tracking-[0.2em] text-[#eceee4]/55 sm:block">{site.coordinates}</p>}
       </div>
 
-      {/* Floating collage card (desktop) */}
-      {wide && cardImage && slides.length > 1 && (
-        <motion.div style={reduce ? undefined : { y: cardY }} className="absolute right-[6vw] top-[22vh] hidden w-[19vw] max-w-[300px] xl:block">
-          <motion.div initial={{ opacity: 0, rotate: 0, y: 40 }} animate={{ opacity: 1, rotate: 5, y: 0 }} transition={{ delay: 0.6, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden rounded-[22px] border border-white/15 bg-white/5 p-2 shadow-2xl backdrop-blur-md">
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.div key={cardImage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} className="aspect-[4/5] overflow-hidden rounded-[16px]">
-                <Img id={cardImage} sizes="300px" alt="" className="h-full w-full object-cover" />
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
+      {/* Floating collage card (wide screens only) */}
+      {wide && hasCard && (
+        <motion.div data-hero-card style={reduce ? undefined : { y: cardY }} className="absolute right-[6vw] top-[22vh] hidden w-[19vw] max-w-[300px] xl:block">
+          {cardImage && (
+            <motion.div initial={{ opacity: 0, rotate: 0, y: 40 }} animate={{ opacity: 1, rotate: 5, y: 0 }} transition={{ delay: 0.6, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden rounded-[22px] border border-white/15 bg-white/5 p-2 shadow-2xl backdrop-blur-md">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div key={cardImage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} className="aspect-[4/5] overflow-hidden rounded-[16px]">
+                  <Img id={cardImage} sizes="300px" className="h-full w-full object-cover" />
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          )}
           {(hero.badgeTitle || hero.badgeText) && (
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1, duration: 0.8 }}
-              className="absolute -bottom-8 -left-16 max-w-[230px] rounded-2xl border border-white/10 bg-[#0b0c0a]/85 p-4 shadow-2xl backdrop-blur-md">
+              className={`max-w-[230px] rounded-2xl border border-white/10 bg-[#0b0c0a]/85 p-4 shadow-2xl backdrop-blur-md ${cardImage ? 'absolute -bottom-8 -left-16' : 'relative mt-24'}`}>
               <p className="h3 text-base text-accent">{hero.badgeTitle}</p>
               <p className="mt-1 text-[13px] leading-snug text-white/70">{hero.badgeText}</p>
             </motion.div>
           )}
-          {about.badge && (
+          {about.badge && cardImage && (
             <motion.div initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }} className="absolute -right-8 -top-10">
               <RingBadge text={about.badge} className="h-28 w-28"><ArrowDown className="h-6 w-6" /></RingBadge>
             </motion.div>

@@ -54,6 +54,7 @@ export const sectionSchemas = {
     title: req('Headline'),
     badgeTitle: opt,
     badgeText: opt,
+    badgeImageIds: z.array(mediaId).max(12),
     text: req('Text'),
     primary: link,
     secondary: link,

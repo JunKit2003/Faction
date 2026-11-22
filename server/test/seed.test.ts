@@ -20,6 +20,8 @@ describe('seedIfEmpty', () => {
     expect(data.site.accentColor).toBe('#c6ff3d');
     expect(data.about.secondImageId).not.toBe('');
     expect(data['home.closer'].title).toBe('Get *dialled.*');
+    expect(data['home.hero'].badgeImageIds).toHaveLength(2);
+    expect(data['home.hero'].badgeImageIds).not.toEqual(expect.arrayContaining(data['home.hero'].slideIds));
     expect(data['home.hero'].slideIds).toHaveLength(3);
     expect(data.faq.items).toHaveLength(9);
     expect(data.faq.items[1].a).toBe('We’re open {hours}.');

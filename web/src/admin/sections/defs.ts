@@ -80,6 +80,7 @@ export const SECTION_DEFS: Record<SectionKey, SectionDef> = {
       { name: 'text', label: 'Text', kind: 'textarea' },
       { name: 'badgeTitle', label: 'Floating card title', kind: 'text', hint: 'The small card beside the photo on big screens. Leave both empty to hide.' },
       { name: 'badgeText', label: 'Floating card text', kind: 'text' },
+      { name: 'badgeImageIds', label: 'Floating card photos', kind: 'mediaList', hint: 'Its own photos, separate from the banner. They take turns. Leave empty for a text-only card.' },
       link('primary', 'Main button'),
       link('secondary', 'Second button'),
       { name: 'slideIds', label: 'Background images', kind: 'mediaList', hint: 'They fade from one to the next. The first loads first.' },

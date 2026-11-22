@@ -25,10 +25,17 @@ export function fillMissing(current: unknown, defaults: unknown): { value: unkno
  * missing fields with the shipped defaults. Never overwrites a value an admin has set.
  * New image fields default to empty (no image). Returns the section keys it changed.
  */
+/** Defaults are built with blank image ids; image lists in them must start empty, not as ['', ''] . */
+function withoutBlankIds(v: unknown, key = ''): unknown {
+  if (Array.isArray(v)) return /Ids$/.test(key) ? v.filter((x) => x !== '') : v.map((x) => withoutBlankIds(x));
+  if (isObj(v)) return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, withoutBlankIds(x, k)]));
+  return v;
+}
+
 export async function upgradeContent(db: Kysely<DB>): Promise<SectionKey[]> {
   const rows = await db.selectFrom('content_sections').select(['key', 'data', 'version']).execute();
   if (!rows.length) return [];
-  const defaults = seedSections(() => '');
+  const defaults = withoutBlankIds(seedSections(() => '')) as ReturnType<typeof seedSections>;
   const byKey = new Map(rows.map((r) => [r.key, r]));
   const changed: SectionKey[] = [];
   const t = nowIso();

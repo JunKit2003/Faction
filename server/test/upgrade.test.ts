@@ -44,6 +44,7 @@ describe('upgradeContent', () => {
     expect(hero.data.title).toBe('Owner edited title');
     expect(hero.data.slideIds).toEqual(['S']);
     expect(typeof hero.data.badgeTitle).toBe('string');
+    expect(hero.data.badgeImageIds).toEqual([]); // new photo lists start empty, never with blank ids
 
     const closer = await read('home.closer');
     expect(sectionSchemas['home.closer'].safeParse(closer.data).success).toBe(true);

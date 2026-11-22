@@ -59,6 +59,7 @@ export function seedSections(id: (k: SeedImage) => string): AllSections {
       title: 'Ride _hard._ We’ll keep you *rolling.*',
       badgeTitle: 'Same-day fixes',
       badgeText: 'Minor tuning and repairs while you ride.',
+      badgeImageIds: [id('image3'), id('image4')],
       text: 'Your dedicated mountain bike service shop beside the Bukit Kiara trails. From precision suspension tuning to full rebuilds — drop in before you drop in.',
       primary: { label: 'Book a Service', href: '/contact#booking' },
       secondary: { label: 'About the Shop', href: '/about' },

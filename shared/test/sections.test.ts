@@ -93,6 +93,18 @@ describe('v2 sections', () => {
   });
 });
 
+describe('hero floating card photos', () => {
+  const hero = { eyebrow: '', title: 'T', text: 't', badgeTitle: '', badgeText: '', primary: { label: 'a', href: '/' }, secondary: { label: 'b', href: '/' }, slideIds: ['S1'] };
+  it('has its own photo list, which may be empty', () => {
+    expect(sectionSchemas['home.hero'].safeParse({ ...hero, badgeImageIds: ['P1', 'P2'] }).success).toBe(true);
+    expect(sectionSchemas['home.hero'].safeParse({ ...hero, badgeImageIds: [] }).success).toBe(true);
+    expect(sectionSchemas['home.hero'].safeParse(hero).success).toBe(false);
+  });
+  it('counts as an image reference for in-use checks', () => {
+    expect(collectMediaIds({ badgeImageIds: ['P1'] })).toEqual(['P1']);
+  });
+});
+
 describe('collectMediaIds', () => {
   it('finds ids under *Id, *Ids and mediaId keys at any depth', () => {
     const data = { logoOnLightId: 'A', slideIds: ['B', 'C'], items: [{ title: 'x', mediaId: 'D' }], name: 'E', ogImageId: '' };
