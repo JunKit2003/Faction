@@ -10,6 +10,7 @@ const site = {
   openedYear: 2022, whatsappNumber: '601133321767', address: 'G-8, Wisma WIM', hours,
   mapEmbedUrl: 'https://www.google.com/maps/embed?pb=abc',
   socials: [{ platform: 'instagram', url: 'https://www.instagram.com/faction.my' }],
+  labels: { hours: 'Hours', address: 'Address', contact: 'Contact' },
 };
 
 describe('section schemas', () => {
@@ -31,6 +32,11 @@ describe('section schemas', () => {
     expect(r.error!.issues[0]!.path).toEqual(['mapEmbedUrl']);
     expect(r.error!.issues[0]!.message).toBe('Paste the embed link from Google Maps → Share → Embed a map.');
     expect(MAP_EMBED_MESSAGE).toBe('Paste the embed link from Google Maps → Share → Embed a map.');
+  });
+
+  it('requires the info labels', () => {
+    const { labels: _l, ...noLabels } = site;
+    expect(sectionSchemas.site.safeParse(noLabels).success).toBe(false);
   });
 
   it('rejects a bad WhatsApp number', () => {

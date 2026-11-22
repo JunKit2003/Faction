@@ -35,6 +35,7 @@ export const sectionSchemas = {
     hours: hoursSchema,
     mapEmbedUrl: z.string().trim().refine((u) => u.startsWith(MAP_EMBED_PREFIX) && !/[\s"'<>]/.test(u), MAP_EMBED_MESSAGE),
     socials: z.array(z.strictObject({ platform: z.enum(['instagram', 'facebook', 'whatsapp']), url: httpUrl })).max(10),
+    labels: z.strictObject({ hours: req('Label'), address: req('Label'), contact: req('Label') }),
   }),
   nav: z.strictObject({
     items: z.array(z.strictObject({ label: req('Label'), path: pagePath })).min(1).max(8),
