@@ -1,0 +1,13 @@
+# Local development / test PostgreSQL
+name: faction-pg
+services:
+  db:
+    image: postgres:16.11-bookworm
+    environment:
+      POSTGRES_USER: faction
+      POSTGRES_PASSWORD: faction
+      POSTGRES_DB: faction
+    ports: ["54321:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:
