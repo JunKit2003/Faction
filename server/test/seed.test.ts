@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SECTION_KEYS, sectionSchemas, formatHours } from '@faction/shared';
+import { SECTION_KEYS, formatHours } from '@faction/shared';
+import { sectionSchemas } from '@faction/shared/schemas';
 import { setupTestApp, type TestCtx } from './helpers.js';
 import { seedIfEmpty } from '../src/seed/run.js';
 

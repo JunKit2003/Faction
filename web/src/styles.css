@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+/* Dark variant follows the device setting, like the original site. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+:root {
+  --accent: #38bdf8;
+  --bg: #f4f5f2;
+  --surface: #ffffff;
+  --fg: #0b0e0c;
+  --muted: #56615b;
+  --line: rgb(11 14 12 / 0.1);
+  --accent-ink: color-mix(in oklab, var(--accent) 55%, #000);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #060807;
+    --surface: #0d1210;
+    --fg: #eef2ef;
+    --muted: #93a09a;
+    --line: rgb(238 242 239 / 0.09);
+    --accent-ink: var(--accent);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  ::selection { background: var(--accent); color: #000; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  img { max-width: 100%; height: auto; }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-12; }
+  .h1 { @apply font-display text-[clamp(3rem,9vw,7.5rem)] uppercase leading-[0.9] tracking-[-0.01em] text-fg; }
+  .h2-xl { @apply font-display text-[clamp(2.6rem,7vw,5.5rem)] uppercase leading-[0.92] text-fg; }
+  .h2 { @apply font-display text-4xl uppercase leading-none text-fg sm:text-5xl; }
+  .lead { @apply text-lg leading-relaxed text-muted sm:text-xl; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.2em] text-muted; }
+  .card { @apply rounded-[28px] border border-line bg-surface; }
+
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-6 py-3 text-[15px] font-semibold transition-[transform,background,color,box-shadow] duration-300 active:scale-[0.97];
+  }
+  .btn-sm { @apply px-5 py-2.5 text-sm; }
+  .btn-lg { @apply px-8 py-4 text-base; }
+  .btn-primary {
+    @apply bg-accent text-black shadow-[0_10px_30px_-10px_var(--accent)] hover:shadow-[0_18px_40px_-12px_var(--accent)];
+  }
+  .btn-primary::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-700;
+  }
+  .btn-primary:hover::after { @apply translate-x-full; }
+  .btn-ghost-light { @apply border border-white/35 text-white backdrop-blur-sm hover:border-white hover:bg-white hover:text-black; }
+  .btn-ghost { @apply border border-line text-fg hover:border-fg; }
+
+  .link-underline {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-underline:hover, .link-underline:focus-visible { background-size: 100% 1px; }
+
+  .skip-link { @apply fixed left-4 top-4 z-[200] -translate-y-24 rounded-full bg-accent px-5 py-3 font-semibold text-black transition-transform focus:translate-y-0; }
+
+  .text-stroke { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+
+  .hero-glow {
+    background:
+      radial-gradient(60% 70% at 85% 0%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+      radial-gradient(50% 60% at 0% 100%, color-mix(in oklab, #1f6b3d 18%, transparent), transparent 70%);
+  }
+
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .marquee-track { animation: marquee 38s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+  @media (prefers-color-scheme: dark) {
+    .map-frame { filter: invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.95); }
+  }
+}
+
+@keyframes marquee { to { transform: translateX(-100%); } }

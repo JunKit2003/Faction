@@ -1,9 +1,7 @@
 import { z } from 'zod';
-import { hoursSchema } from './hours';
 import { isSafeHref } from './richtext';
+import { MAP_EMBED_MESSAGE, MAP_EMBED_PREFIX, SECTION_KEYS, SITE_PAGES, type SectionKey, type SitePage } from './keys';
 
-export const MAP_EMBED_PREFIX = 'https://www.google.com/maps/embed?';
-export const MAP_EMBED_MESSAGE = 'Paste the embed link from Google Maps → Share → Embed a map.';
 
 const req = (label = 'This field') => z.string().trim().min(1, `${label} is required`).max(5000);
 const opt = z.string().max(5000);
@@ -13,14 +11,23 @@ const href = z.string().trim().min(1, 'Link is required').refine(isSafeHref, 'Us
 const httpUrl = z.string().trim().regex(/^https?:\/\/\S+$/i, 'Use a full https:// link');
 const link = z.strictObject({ label: req('Label'), href });
 
-export const PAGE_PATHS = { home: '/', about: '/about', media: '/media', faq: '/faq', contact: '/contact' } as const;
-export type SitePage = keyof typeof PAGE_PATHS;
-export const SITE_PAGES = Object.keys(PAGE_PATHS) as SitePage[];
-export function sitePageForPath(path: string): SitePage | null {
-  const clean = path.replace(/\/+$/, '') || '/';
-  return (SITE_PAGES.find((p) => PAGE_PATHS[p] === clean) ?? null);
-}
 const pagePath = z.enum(['/', '/about', '/media', '/faq', '/contact']);
+
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+const daySchema = z
+  .strictObject({ closed: z.boolean(), open: z.string(), close: z.string() })
+  .superRefine((d, ctx) => {
+    if (d.closed) return;
+    if (!TIME.test(d.open)) ctx.addIssue({ code: 'custom', path: ['open'], message: 'Use 24-hour HH:MM, e.g. 11:00' });
+    if (!TIME.test(d.close)) ctx.addIssue({ code: 'custom', path: ['close'], message: 'Use 24-hour HH:MM, e.g. 19:30' });
+    else if (TIME.test(d.open) && d.open >= d.close) ctx.addIssue({ code: 'custom', path: ['close'], message: 'Closing time must be after opening time' });
+  });
+
+export const hoursSchema = z.strictObject({
+  mon: daySchema, tue: daySchema, wed: daySchema, thu: daySchema, fri: daySchema, sat: daySchema, sun: daySchema,
+});
+
 
 export const sectionSchemas = {
   site: z.strictObject({
@@ -101,57 +108,11 @@ export const sectionSchemas = {
   }),
 } as const;
 
-export type SectionKey = keyof typeof sectionSchemas;
-export const SECTION_KEYS = Object.keys(sectionSchemas) as SectionKey[];
+// Compile-time check that the schema list and the key list agree.
+type SchemaKey = keyof typeof sectionSchemas;
+const _keysMatch: [SchemaKey] extends [SectionKey] ? ([SectionKey] extends [SchemaKey] ? true : never) : never = true;
+void _keysMatch;
+void SECTION_KEYS;
 export type SectionData<K extends SectionKey> = z.infer<(typeof sectionSchemas)[K]>;
 export type AllSections = { [K in SectionKey]: SectionData<K> };
 
-export const SECTION_LABELS: Record<SectionKey, string> = {
-  site: 'Site settings',
-  nav: 'Navigation',
-  'home.hero': 'Home: Hero',
-  'home.services': 'Home: Services',
-  'home.stats': 'Home: Stats',
-  'home.process': 'Home: How it works',
-  'home.map': 'Home: Map',
-  about: 'About',
-  media: 'Media gallery',
-  faq: 'FAQ',
-  contact: 'Contact',
-  footer: 'Footer',
-  seo: 'SEO',
-};
-
-export function isSectionKey(k: string): k is SectionKey {
-  return Object.prototype.hasOwnProperty.call(sectionSchemas, k);
-}
-
-/** Every non-empty string under a key ending in `Id`, `Ids` or named `mediaId`, at any depth. */
-export function collectMediaIds(data: unknown): string[] {
-  const out = new Set<string>();
-  const walk = (v: unknown, key: string | null) => {
-    const isIdKey = key !== null && /(Id|Ids)$/.test(key);
-    if (typeof v === 'string') { if (isIdKey && v) out.add(v); return; }
-    if (Array.isArray(v)) { for (const x of v) walk(x, isIdKey ? key : null); return; }
-    if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) walk(x, k);
-  };
-  walk(data, null);
-  return [...out];
-}
-
-/** Public shape of an image, resolved by the server. */
-export interface MediaView {
-  id: string;
-  url: string;
-  srcset: string;
-  width: number;
-  height: number;
-  alt: string;
-  mime: string;
-}
-
-export interface PublicContent {
-  sections: AllSections;
-  media: Record<string, MediaView>;
-  version: string;
-}

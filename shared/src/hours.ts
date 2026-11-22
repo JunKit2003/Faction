@@ -1,26 +1,10 @@
-import { z } from 'zod';
-
 export const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 export type Day = (typeof DAYS)[number];
 export const DAY_LABELS: Record<Day, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
 export const SHOP_TIMEZONE = 'Asia/Kuala_Lumpur';
 
-const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-const daySchema = z
-  .strictObject({ closed: z.boolean(), open: z.string(), close: z.string() })
-  .superRefine((d, ctx) => {
-    if (d.closed) return;
-    if (!TIME.test(d.open)) ctx.addIssue({ code: 'custom', path: ['open'], message: 'Use 24-hour HH:MM, e.g. 11:00' });
-    if (!TIME.test(d.close)) ctx.addIssue({ code: 'custom', path: ['close'], message: 'Use 24-hour HH:MM, e.g. 19:30' });
-    else if (TIME.test(d.open) && d.open >= d.close) ctx.addIssue({ code: 'custom', path: ['close'], message: 'Closing time must be after opening time' });
-  });
-
-export const hoursSchema = z.strictObject({
-  mon: daySchema, tue: daySchema, wed: daySchema, thu: daySchema, fri: daySchema, sat: daySchema, sun: daySchema,
-});
-export type DayHours = z.infer<typeof daySchema>;
-export type Hours = z.infer<typeof hoursSchema>;
+export interface DayHours { closed: boolean; open: string; close: string }
+export type Hours = Record<Day, DayHours>;
 
 const dayText = (d: DayHours) => (d.closed ? 'Closed' : `${d.open}–${d.close}`);
 

@@ -1,5 +1,6 @@
 import type { Kysely, Transaction } from 'kysely';
-import { sectionSchemas, type SectionKey } from '@faction/shared';
+import type { SectionKey } from '@faction/shared';
+import { sectionSchemas } from '@faction/shared/schemas';
 import type { DB } from '../db/types.js';
 import { nowIso } from '../db/ids.js';
 import { HttpError, toIssues } from '../http.js';

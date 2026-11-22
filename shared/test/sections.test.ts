@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { sectionSchemas, SECTION_KEYS, SECTION_LABELS, collectMediaIds, hoursSchema, MAP_EMBED_MESSAGE, sitePageForPath } from '../src/index.js';
+import { SECTION_KEYS, SECTION_LABELS, collectMediaIds, MAP_EMBED_MESSAGE, sitePageForPath } from '../src/index.js';
+import { sectionSchemas, hoursSchema } from '../src/schemas.js';
 
 const day = (open: string, close: string) => ({ closed: false, open, close });
 const closed = { closed: true, open: '', close: '' };

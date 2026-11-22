@@ -13,7 +13,9 @@ await build({
   plugins: [{
     name: 'bundle-shared',
     setup(b) {
-      b.onResolve({ filter: /^@faction\/shared$/ }, () => ({ path: new URL('../shared/src/index.ts', import.meta.url).pathname }));
+      b.onResolve({ filter: /^@faction\/shared(\/schemas)?$/ }, (a) => ({
+        path: new URL(a.path.endsWith('/schemas') ? '../shared/src/schemas.ts' : '../shared/src/index.ts', import.meta.url).pathname,
+      }));
     },
   }],
   banner: { js: "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);" },
