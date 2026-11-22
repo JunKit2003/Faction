@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import sharp from 'sharp';
+import sharp, { type Metadata } from 'sharp';
 import type { MediaView } from '@faction/shared';
 import type { MediaTable } from '../db/types.js';
 import { HttpError } from '../http.js';
@@ -26,7 +26,7 @@ export async function processImage(buf: Buffer, id: string, opts: { allowSvg: bo
   if (looksSvg) {
     const text = buf.toString('utf8');
     if (!opts.allowSvg || UNSAFE_SVG.test(text)) throw new HttpError(415, UPLOAD_COPY);
-    let meta: sharp.Metadata;
+    let meta: Metadata;
     try { meta = await sharp(buf).metadata(); } catch { throw new HttpError(415, UPLOAD_COPY); }
     if (meta.format !== 'svg') throw new HttpError(415, UPLOAD_COPY);
     const filename = `${id}.svg`;
@@ -34,7 +34,7 @@ export async function processImage(buf: Buffer, id: string, opts: { allowSvg: bo
     return { filename, mime: 'image/svg+xml', width: meta.width ?? 0, height: meta.height ?? 0 };
   }
 
-  let meta: sharp.Metadata;
+  let meta: Metadata;
   try { meta = await sharp(buf).metadata(); } catch { throw new HttpError(415, UPLOAD_COPY); }
   if (!['jpeg', 'png', 'webp'].includes(meta.format ?? '')) throw new HttpError(415, UPLOAD_COPY);
 
