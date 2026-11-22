@@ -1,6 +1,4 @@
-import { useRef } from 'react';
 import { Link } from 'react-router';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { formatHours } from '@faction/shared';
 import { useSection } from '../../content/ContentContext';
@@ -13,10 +11,6 @@ import { OpenBadge } from '../OpenBadge';
 export default function About() {
   const a = useSection('about');
   const site = useSection('site');
-  const imgRef = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: imgRef, offset: ['start end', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 1], ['-8%', '8%']);
 
   return (
     <>
@@ -27,11 +21,9 @@ export default function About() {
           {a.story.map((p, i) => <p key={i} className="text-lg leading-relaxed text-muted"><RichText text={p} /></p>)}
         </Reveal>
         <Reveal delay={0.1}>
-          <div ref={imgRef} className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-line">
-            <motion.div style={reduce ? undefined : { y, scale: 1.18 }} className="absolute inset-0">
-              <Img id={a.imageId} sizes="(min-width: 1024px) 50vw, 100vw" className="h-full w-full object-cover" />
-            </motion.div>
-          </div>
+          {/* Whole photo at its natural shape, scaled to fit the column and the screen height. */}
+          <Img id={a.imageId} sizes="(min-width: 1024px) 50vw, 100vw"
+            className="mx-auto h-auto max-h-[85vh] w-auto max-w-full rounded-[32px] border border-line" />
         </Reveal>
       </section>
       <section className="border-t border-line bg-surface">
