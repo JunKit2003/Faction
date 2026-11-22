@@ -29,7 +29,8 @@ test.describe('public site', () => {
   test('quick message opens WhatsApp pre-filled', async ({ page }) => {
     await page.addInitScript(() => {
       (window as unknown as { __opened: string[] }).__opened = [];
-      window.open = ((u: string) => { (window as unknown as { __opened: string[] }).__opened.push(u); return {} as Window; }) as typeof window.open;
+      // Like real browsers: 'noopener' makes open() return null.
+      window.open = ((u: string, _t?: string, f?: string) => { (window as unknown as { __opened: string[] }).__opened.push(u); return f?.includes('noopener') ? null : ({} as Window); }) as typeof window.open;
     });
     await page.goto('/contact');
     await page.getByRole('button', { name: 'Send' }).click();
@@ -39,6 +40,8 @@ test.describe('public site', () => {
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Opening WhatsApp…')).toBeVisible();
     const opened = await page.evaluate(() => (window as unknown as { __opened: string[] }).__opened);
+    expect(opened).toHaveLength(1);
+    await expect(page).toHaveURL(/\/contact$/);
     expect(decodeURIComponent(opened[0]!)).toBe('https://wa.me/601133321767?text=New website enquiry\nName: Aiman\nMessage: Fork service?');
   });
 

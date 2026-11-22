@@ -29,8 +29,10 @@ export function ContactForm() {
     }
     const text = [c.whatsappHeader, `Name: ${name.trim()}`, `Message: ${message.trim()}`].join('\n');
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
-    const win = window.open(url, '_blank', 'noopener');
-    if (!win) window.location.href = url;
+    // Not passing 'noopener' (it makes open() return null); cut the opener link by hand instead.
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
+    else window.location.href = url; // popup blocked
     setStatus('Opening WhatsApp…');
     setName('');
     setMessage('');

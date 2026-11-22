@@ -80,7 +80,23 @@ describe('upload', () => {
     expect(file.headers['content-security-policy']).toContain("default-src 'none'");
   });
 
+  it('accepts an SVG logo with an XML prolog, DOCTYPE and long comment (Illustrator style)', async () => {
+    const s = await signIn(ctx.app, 'owner@faction.my');
+    const svg = Buffer.from('<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generator: Adobe Illustrator ' + 'x'.repeat(2000) + ' -->\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40"><rect width="120" height="40"/></svg>');
+    const res = await upload(s, svg, 'logo.svg', '?purpose=logo');
+    expect(res.status).toBe(201);
+    expect(res.body.mime).toBe('image/svg+xml');
+  });
+
+  it('explains when a logo SVG is refused for active content', async () => {
+    const s = await signIn(ctx.app, 'owner@faction.my');
+    const res = await upload(s, Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>x</script></svg>'), 'evil.svg', '?purpose=logo');
+    expect(res.body.error).toBe('This SVG contains scripts or links that aren’t allowed. Export it again as a plain SVG, or upload a PNG.');
+  });
+
   it.each([
+    ['entity-encoded js link', '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript&#58;alert(1)"><rect/></a></svg>'],
+    ['entity declaration', '<?xml version="1.0"?><!DOCTYPE svg [<!ENTITY x "y">]><svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>'],
     ['script', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'],
     ['handler', '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"><rect/></svg>'],
     ['js link', '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert(1)"><rect/></a></svg>'],

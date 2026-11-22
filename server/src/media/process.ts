@@ -12,7 +12,11 @@ const MAX_W = 2400;
 
 export interface ProcessedImage { filename: string; mime: string; width: number; height: number }
 
-const UNSAFE_SVG = /<script|<foreignObject|<iframe|<embed|<object|\son[a-z]+\s*=|javascript:|data:text\/html|<!ENTITY/i;
+export const SVG_UNSAFE_COPY = 'This SVG contains scripts or links that aren’t allowed. Export it again as a plain SVG, or upload a PNG.';
+// SVG logos are not rewritten: any active content gets the file refused. (/uploads is also served with a sandbox CSP.)
+const UNSAFE_SVG = /<script|<foreignObject|<iframe|<embed|<object|<!ENTITY|\son[a-z]+\s*=|javascript\s*:|javascript&#|data:text\/html|&#x?0*(58|3a);?/i;
+/** Root element is <svg>, after an optional XML prolog, comments and a DOCTYPE without an internal subset. */
+const SVG_HEAD = /^\uFEFF?\s*(<\?xml[^>]*\?>\s*)?(<!--[\s\S]*?-->\s*)*(<!DOCTYPE\s+svg[^>[]*>\s*)?(<!--[\s\S]*?-->\s*)*<svg[\s>]/i;
 
 /** Final widths generated for an image of this (already capped) width. */
 export const variantWidths = (width: number) => [...WIDTHS.filter((w) => w < width), width];
@@ -20,12 +24,13 @@ export const variantWidths = (width: number) => [...WIDTHS.filter((w) => w < wid
 /** Validates by content (not filename), resizes to webp variants and strips metadata. */
 export async function processImage(buf: Buffer, id: string, opts: { allowSvg: boolean; uploadDir: string }): Promise<ProcessedImage> {
   await fs.mkdir(opts.uploadDir, { recursive: true });
-  const head = buf.subarray(0, 1024).toString('utf8').trimStart();
-  const looksSvg = /^(<\?xml[^>]*>\s*)?(<!--[\s\S]*?-->\s*)*<svg[\s>]/i.test(head);
+  const head = buf.subarray(0, 64 * 1024).toString('utf8');
+  const looksSvg = head.trimStart().startsWith('<') && (SVG_HEAD.test(head) || /^\s*<\?xml[\s\S]*?<!DOCTYPE\s+svg\s*\[/i.test(head));
 
   if (looksSvg) {
     const text = buf.toString('utf8');
-    if (!opts.allowSvg || UNSAFE_SVG.test(text)) throw new HttpError(415, UPLOAD_COPY);
+    if (!opts.allowSvg) throw new HttpError(415, UPLOAD_COPY);
+    if (UNSAFE_SVG.test(text)) throw new HttpError(415, SVG_UNSAFE_COPY);
     let meta: Metadata;
     try { meta = await sharp(buf).metadata(); } catch { throw new HttpError(415, UPLOAD_COPY); }
     if (meta.format !== 'svg') throw new HttpError(415, UPLOAD_COPY);

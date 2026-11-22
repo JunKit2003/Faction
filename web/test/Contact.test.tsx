@@ -7,6 +7,21 @@ import { renderWithContent } from './render';
 afterEach(() => vi.restoreAllMocks());
 
 describe('ContactForm', () => {
+  it('opens WhatsApp exactly once, without also navigating this tab', async () => {
+    // Real browsers return null from window.open when 'noopener' is requested.
+    const popup = { opener: window as unknown } as Window;
+    const open = vi.spyOn(window, 'open').mockImplementation(((_u?: string | URL, _t?: string, features?: string) => (features?.includes('noopener') ? null : popup)) as typeof window.open);
+    const before = window.location.href;
+    renderWithContent(<ContactForm />);
+    await userEvent.type(screen.getByLabelText('Name'), 'Aiman');
+    await userEvent.type(screen.getByLabelText('Message'), 'Hi');
+    await userEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(open.mock.calls[0]![2]).toBeUndefined();
+    expect(popup.opener).toBeNull();
+    expect(window.location.href).toBe(before);
+  });
+
   it('requires a name and does not open WhatsApp', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderWithContent(<ContactForm />);

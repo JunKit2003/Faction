@@ -62,12 +62,12 @@ The Faction Bikeworks site today is five static HTML pages (Home, About, Media, 
 Gallery and hero slides are **ordered arrays of media ids inside their section JSON**, so reordering them is one section save and one audit entry.
 
 ### The rules that fall out of this
-- **Database switch:** `DB_CLIENT=mysql|pg` + `DATABASE_URL`. Migrations use only the column types both databases share (`varchar`, `text`, `integer`, `boolean`, `timestamp`), and CI runs them on both.
+- **Database switch:** `DB_CLIENT=mysql|pg` + `DATABASE_URL`. Migrations use only the column types both databases share (`varchar`, `text`/`longtext`, `integer`). Times are ISO-8601 strings and flags are nullable `*_at` columns (*builder's call*, avoids boolean/timestamp differences). The test suite runs on both.
 - **Optimistic concurrency:** saving a section sends the `version` it was loaded at. If the stored version has moved on, the server answers 409 and the UI says "Someone else changed this, reload to see their version".
 - **Every write is audited in the same transaction** as the change: section update, media upload/alt edit/delete, user create/disable/delete/password reset, own password change, login success, login failure, logout, restore.
 - **Restore** copies an audit entry's `before` (or `after`) back into the section. That counts as a new update with its own audit row. Any soft-deleted image the restored version uses is un-deleted in the same transaction (*builder's call*).
 - **Media in use can't be deleted.** The server returns the sections using it so the admin can see where it's used.
-- **Uploads:** jpg/png/webp up to 15 MB. `sharp` re-encodes to webp at 480/960/1600/2400 px widths, strips EXIF, and keeps the original aspect ratio. Logos also accept svg, which is sanitised before saving.
+- **Uploads:** jpg/png/webp up to 15 MB. `sharp` re-encodes to webp at 480/960/1600/2400 px widths, strips EXIF, and keeps the original aspect ratio. Logos also accept svg. SVGs are not rewritten: one containing scripts, event handlers, `javascript:` links, embedded objects or entity declarations is refused with an explanation, and `/uploads` is served with a sandboxing CSP (*builder's call*).
 - **Admin safety:** you can't disable or delete yourself, and the last active admin can't be removed. Login is rate-limited (5 failures per 15 minutes per IP + email). Every mutating request is checked against the `Origin` header.
 - **First admin:** `npm run admin:create -- --email … --name …` prompts for a password. There's also `ADMIN_BOOTSTRAP_EMAIL`/`ADMIN_BOOTSTRAP_PASSWORD`, which is used only when the `users` table is empty.
 - **SEO without SSR:** the server serves the built `index.html` with that page's title, description, OG tags, canonical URL and a JSON-LD `BikeStore` block filled in from the database. `/sitemap.xml` and `/robots.txt` are generated (base URL from `PUBLIC_BASE_URL`). The old `*.html` URLs 301 to the new paths (`/about`, `/media`, `/faq`, `/contact`).
@@ -107,13 +107,10 @@ Initial migration: `0001_initial` (all tables) and seed `0001_seed_current_site`
 
 **Admin Panel:** at `/admin`, works on a phone first. The left nav (a bottom sheet on mobile) lists Site settings, Home: Hero, Home: Services, Home: Stats, Home: How it works, Home: Map, About, Media gallery, FAQ, Contact, Footer & social, SEO, Media library, Admins, Audit log. Each editor has a live preview pane on desktop and a "Preview" toggle on mobile. Lists support add, delete, and drag-to-reorder. Save shows "Saved" or a clear error. Leaving with unsaved changes asks first. The audit log shows a side-by-side field diff and a "Restore this version" button.
 
-**Also out of scope:** pointing factionbikeworks.com at the new app, choosing a host, rotating the old Google key (owner's task). Deliverable is a deployable, documented build.
-
 **Also out of scope:** pointing factionbikeworks.com at the new app, choosing a host, and rotating the old Google key (the owner's task). The deliverable is a deployable, documented build.
 
 ## 5. Known limitations
 - Very old shared hosts (glibc < 2.26, or no Node 20+) can't run the ready-built image and password add-ons. Use Docker or a VPS (a rented virtual server) there.
-- Very old shared hosts (glibc < 2.26 or no Node 20+) can't run the prebuilt image/password modules; use Docker or a VPS there.
 - Uploaded images live on the server's disk. The host has to keep `UPLOAD_DIR` between deploys (a Docker volume or persistent folder).
 - There's no email, so a forgotten password is reset by another admin or with the `admin:create --reset` CLI.
 - The SPA renders content on the client. Search engines get correct meta tags and JSON-LD from the server, but page body text appears after JavaScript runs (Google handles this fine).

@@ -65,6 +65,21 @@ describe('pages', () => {
     expect(res.text).not.toContain('<script>alert(1)');
   });
 
+  it("keeps $ sequences in admin text intact (no String.replace patterns)", async () => {
+    const row = await ctx.db.selectFrom('content_sections').select('data').where('key', '=', 'home.map').executeTakeFirstOrThrow();
+    const map = JSON.parse(row.data);
+    map.subtitle = "Price $' and $` and $& and $$ ok";
+    await ctx.db.updateTable('content_sections').set({ data: JSON.stringify(map) }).where('key', '=', 'home.map').execute();
+    const seoRow = await ctx.db.selectFrom('content_sections').select('data').where('key', '=', 'seo').executeTakeFirstOrThrow();
+    const seo = JSON.parse(seoRow.data);
+    seo.pages.faq.title = "FAQ $' $& | Faction";
+    await ctx.db.updateTable('content_sections').set({ data: JSON.stringify(seo) }).where('key', '=', 'seo').execute();
+    const res = await request(ctx.app).get('/faq');
+    const json = res.text.match(/window\.__FACTION__=(.*?)<\/script>/s)![1]!;
+    expect(JSON.parse(json).sections['home.map'].subtitle).toBe("Price $' and $` and $& and $$ ok");
+    expect(res.text).toContain("<title>FAQ $' $&amp; | Faction</title>");
+  });
+
   it('marks admin pages noindex', async () => {
     const res = await request(ctx.app).get('/admin/faq');
     expect(res.status).toBe(200);
